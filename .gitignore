@@ -16,3 +16,6 @@
 *.imi
 *.xml
 *.idea
+
+config/content/
+!config/content/default.yaml
