@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"net"
+	"net/url"
+	"strings"
 )
 
 const (
@@ -80,6 +82,28 @@ func RetrieveTcpAddrList(in []string) []net.TCPAddr {
 	return tcpAddrList
 }
 
+func RetrieveAuthPrefixHeader(in string) string {
+	switch in {
+	case "Jwt", "Bearer":
+		return in
+	default:
+		panic(fmt.Sprintf("Wrong value of authHeaderPrefix: %s", in))
+
+	}
+}
+
+func RetrieveRelationalDatabaseType(in string) string {
+	in = strings.ToLower(in)
+	switch in {
+	case "mysql":
+		return in
+	case "postgres":
+		return in
+	default:
+		panic(fmt.Sprintf("Unsupported database type: %s", in))
+	}
+}
+
 type GORMConfig struct {
 	MaxIdleConnections int `json:"maxIdleConnections" yaml:"maxIdleConnections"`
 	MaxOpenConnections int `json:"maxOpenConnections" yaml:"maxOpenConnections"`
@@ -87,24 +111,37 @@ type GORMConfig struct {
 
 type RelationalDatabaseConfig struct {
 	TCPAddrField
-	Username     string     `json:"user" yaml:"user"`
-	Password     string     `json:"password" yaml:"password"`
-	DatabaseName string     `json:"databaseName" yaml:"databaseName"`
-	Type         string     `json:"type" yaml:"type"`
-	PathParam    string     `json:"pathParam" yaml:"pathParam"`
-	GORM         GORMConfig `json:"gorm" yaml:"gorm"`
+	Username     string              `json:"user" yaml:"user"`
+	Password     string              `json:"password" yaml:"password"`
+	DatabaseName string              `json:"databaseName" yaml:"databaseName"`
+	Type         string              `json:"type" yaml:"type"`
+	PathParam    map[string][]string `json:"pathParam" yaml:"pathParam"`
+	GORM         GORMConfig          `json:"gorm" yaml:"gorm"`
 }
 
 func (r RelationalDatabaseConfig) Dsn() string {
+	var pathValues url.Values
+	pathValues = r.PathParam
 	dsn := ""
 	switch r.Type {
 	case "mysql":
-		dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", r.Username, r.Password, r.TcpAddr.String(), r.DatabaseName, r.PathParam)
-	case "Postgresql":
-		dsn = fmt.Sprintf(
-			"host=%s user=%s password=%s dbname=%s port=%d %s",
-			r.TcpAddr.String(), r.Username, r.Password, r.DatabaseName, r.TcpAddr.Port, r.PathParam,
-		)
+		dsn = (&url.URL{
+			User:     url.UserPassword(r.Username, r.Password),
+			Scheme:   r.Type,
+			Host:     r.TcpAddr.String(),
+			Path:     r.DatabaseName,
+			RawQuery: (&pathValues).Encode(),
+		}).String()
+		//dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", r.Username, r.Password, r.TcpAddr.String(), r.DatabaseName, r.PathParam)
+	case "postgres":
+		dsn = (&url.URL{
+			User:     url.UserPassword(r.Username, r.Password),
+			Scheme:   r.Type,
+			Host:     r.TcpAddr.String(),
+			Path:     r.DatabaseName,
+			RawQuery: (&pathValues).Encode(),
+		}).String()
+		//dsn = fmt.Sprintf("postgresql://%s:%s@%s/%s?%s", r.Username, r.Password, r.TcpAddr.String(), r.DatabaseName, r.PathParam)
 	}
 	return dsn
 }
@@ -128,9 +165,9 @@ type CorsConfig struct {
 
 type SystemConfig struct {
 	TCPAddrField             // 服务器地址:端口
-	Environment   string     `json:"environment" yaml:"environment" validate:"oneof=Development Test Production"`
+	Environment   string     `json:"environment" yaml:"environment"`
 	Debug         bool       `json:"debug" yaml:"debug"`
-	RequestSchema string     `json:"requestSchema" yaml:"requestSchema" validate:"oneof=http https"`
+	RequestSchema string     `json:"requestSchema" yaml:"requestSchema"`
 	Label         string     `json:"label" yaml:"label"`
 	Description   string     `json:"description" yaml:"description"`
 	WhiteList     []net.IP   `json:"whiteList" yaml:"whiteList"`

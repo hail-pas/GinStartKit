@@ -1,11 +1,10 @@
 RelationalDatabase:
-  Type: Postgres
-  Addr: localhost:5432
-  Username: GinStartKit
-  DatabaseName: GinStartKit
-  Password: 112358
-  PathPAram:
-    connect_timeout: [ 10 ]
+  Type: MySQL
+  Addr: localhost:3306
+  Username: root
+  DatabaseName: django-start-kit
+  Password: panhq112358
+  PathParam: {"foo":["bar", ]}, {"key": ["value", ]}
   GORM:
     MaxIdleConnections:
     MaxOpenConnections:

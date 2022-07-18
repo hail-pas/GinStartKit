@@ -12,5 +12,5 @@ var (
 	Redis              *redis.Client
 	RedisCtx           context.Context
 	RelationalDatabase *gorm.DB
-	//ConcurrencyControl = &singleflight.Group{}
+	//Hbase
 )

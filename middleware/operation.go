@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/hail-pas/GinStartKit/api/service"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
 	"github.com/rs/zerolog/log"
@@ -25,8 +26,17 @@ func init() {
 
 func OperationRecord() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var userProxy service.UserProxy
+
+		userAny, ok := c.Get("user")
+
+		if !ok {
+			return
+		}
+
+		userProxy = userAny.(service.UserProxy)
+
 		var body []byte
-		var userId int
 		if c.Request.Method != http.MethodGet {
 			var err error
 			body, err = ioutil.ReadAll(c.Request.Body)
@@ -48,15 +58,13 @@ func OperationRecord() gin.HandlerFunc {
 			}
 			body, _ = json.Marshal(&m)
 		}
-		// TODO: UserId
-		userId = 1
 		record := model.OperationRecord{
 			Ip:     c.ClientIP(),
 			Method: c.Request.Method,
 			Path:   c.Request.URL.Path,
 			Agent:  c.Request.UserAgent(),
 			Body:   string(body),
-			UserID: userId,
+			UserID: int(userProxy.ID),
 		}
 
 		// 上传文件时候 中间件日志进行裁断操作

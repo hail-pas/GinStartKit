@@ -2,6 +2,7 @@ package response
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hail-pas/GinStartKit/global/constant"
 	"math"
 	"net/http"
 )
@@ -13,32 +14,27 @@ type PageInfo struct {
 	PageSize   int64 `json:"pageSize"`
 }
 
-const (
-	SUCCESS = 000
-	ERROR   = 001
-)
-
-type Response struct {
+type response struct {
 	Code    int         `json:"code"`
 	Data    interface{} `json:"data"`
 	Message string      `json:"message"`
 }
 
 type WithPageInfo struct {
-	Response
+	response
 	PageInfo PageInfo `json:"pageInfo"`
 }
 
-func response(c *gin.Context, code int, data interface{}, message string, pageSize, pageNum, totalCount int64) {
+func Response(c *gin.Context, code int, data interface{}, message string, pageSize, pageNum, totalCount int64) {
 	if pageSize == -1 && pageNum == -1 && totalCount == -1 {
-		c.JSON(http.StatusOK, Response{
+		c.JSON(http.StatusOK, response{
 			Code:    code,
 			Data:    data,
 			Message: message,
 		})
 	} else {
 		c.JSON(http.StatusOK, WithPageInfo{
-			Response: Response{
+			response: response{
 				Code:    code,
 				Data:    data,
 				Message: message,
@@ -55,21 +51,28 @@ func response(c *gin.Context, code int, data interface{}, message string, pageSi
 }
 
 func Ok(c *gin.Context) {
-	response(c, SUCCESS, nil, "success", -1, -1, -1)
+	Response(c, constant.CodeSuccess, nil, constant.MessageSuccess, -1, -1, -1)
 }
 
 func OkWithMessage(c *gin.Context, message string) {
-	response(c, SUCCESS, nil, message, -1, -1, -1)
+	Response(c, constant.CodeSuccess, nil, message, -1, -1, -1)
 }
 
 func OkWithData(c *gin.Context, data interface{}) {
-	response(c, SUCCESS, data, "", -1, -1, -1)
+	Response(c, constant.CodeSuccess, data, constant.MessageSuccess, -1, -1, -1)
 }
 
 func OkWithPageData(c *gin.Context, data interface{}, pageSize, pageNum, totalCount int64) {
-	response(c, SUCCESS, data, "", pageSize, pageNum, totalCount)
+	Response(c, constant.CodeSuccess, data, constant.MessageSuccess, pageSize, pageNum, totalCount)
 }
 
-func Fail(c *gin.Context, message string) {
-	response(c, ERROR, nil, message, -1, -1, -1)
+func Fail(c *gin.Context) {
+	Response(c, constant.CodeError, nil, constant.MessageError, -1, -1, -1)
+}
+
+func FailWithMessage(c *gin.Context, message string) {
+	Response(c, constant.CodeError, nil, message, -1, -1, -1)
+}
+func BadRequest(c *gin.Context, message string) {
+	Response(c, constant.CodeInvalidRequest, nil, message, -1, -1, -1)
 }

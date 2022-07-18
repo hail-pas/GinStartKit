@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 func GormDB() {
@@ -13,7 +14,12 @@ func GormDB() {
 		panic("Empty DatabaseName")
 	}
 
-	gormConfig := &gorm.Config{DisableForeignKeyConstraintWhenMigrating: true}
+	gormConfig := &gorm.Config{
+		DisableForeignKeyConstraintWhenMigrating: true,
+		NamingStrategy: schema.NamingStrategy{
+			SingularTable: true,
+		},
+	}
 
 	var db *gorm.DB
 	var err error

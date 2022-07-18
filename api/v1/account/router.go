@@ -2,7 +2,7 @@ package account
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hail-pas/GinStartKit/core/middleware"
+	"github.com/hail-pas/GinStartKit/middleware"
 )
 
 func RegisterRouter(parentRouter *gin.RouterGroup) {

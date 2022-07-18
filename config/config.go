@@ -58,11 +58,11 @@ func setRelationalDatabase(c *Config) {
 	relationalDatabaseConfig.Username = viper.GetString("RelationalDatabase.Username")
 	relationalDatabaseConfig.DatabaseName = viper.GetString("RelationalDatabase.DatabaseName")
 	relationalDatabaseConfig.Password = viper.GetString("RelationalDatabase.Password")
-	relationalDatabaseConfig.Type = strings.ToLower(viper.GetString("RelationalDatabase.Type"))
+	relationalDatabaseConfig.Type = RetrieveRelationalDatabaseType(viper.GetString("RelationalDatabase.Type"))
 	if relationalDatabaseConfig.Type == "" {
-		relationalDatabaseConfig.Type = "postgresql"
+		relationalDatabaseConfig.Type = "postgres"
 	}
-	relationalDatabaseConfig.PathParam = viper.GetString("RelationalDatabase.PathParam")
+	relationalDatabaseConfig.PathParam = viper.GetStringMapStringSlice("RelationalDatabase.PathParam")
 	c.RelationalDatabase = relationalDatabaseConfig
 }
 
@@ -174,7 +174,7 @@ func setKafka(c *Config) {
 func setJwt(c *Config) {
 	jwtConfig := JwtConfig{}
 	jwtConfig.Secret = viper.GetString("Jwt.Secret")
-	jwtConfig.AuthHeaderPrefix = viper.GetString("Jwt.AuthHeaderPrefix")
+	jwtConfig.AuthHeaderPrefix = RetrieveAuthPrefixHeader(viper.GetString("Jwt.AuthHeaderPrefix"))
 	jwtConfig.ExpireMinute = viper.GetInt64("Jwt.ExpireMinute")
 	jwtConfig.RefreshMinute = viper.GetInt64("Jwt.RefreshMinute")
 	jwtConfig.Issuer = viper.GetString("Jwt.Issuer")

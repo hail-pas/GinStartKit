@@ -1,6 +1,7 @@
 package constant
 
 //Headers
+//goland:noinspection GoUnusedConst
 const (
 	HeaderAccept                        = "Accept"
 	HeaderAcceptCharset                 = "Accept-Charset"
