@@ -2,7 +2,7 @@ package account
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hail-pas/GinStartKit/api/schema/common/response"
+	"github.com/hail-pas/GinStartKit/global/common/response"
 )
 
 func List(c *gin.Context) {

@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type PasswordField struct {
@@ -41,14 +40,4 @@ type User struct {
 	PhoneField
 	PasswordField
 	UserOtherInfo
-}
-
-func (u User) hashPassword() error {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
-
-	if err != nil {
-		return err
-	}
-	u.Password = string(hashedPassword)
-	return nil
 }

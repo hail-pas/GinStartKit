@@ -46,5 +46,8 @@ func GormDB() {
 	sqlDB, _ := db.DB()
 	sqlDB.SetMaxIdleConns(relationalDatabaseConfig.GORM.MaxIdleConnections)
 	sqlDB.SetMaxOpenConns(relationalDatabaseConfig.GORM.MaxOpenConnections)
+	if err = sqlDB.Ping(); err != nil {
+		panic(err)
+	}
 	global.RelationalDatabase = db
 }

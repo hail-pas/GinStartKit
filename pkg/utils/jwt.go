@@ -1,11 +1,10 @@
 package utils
 
 import (
-	"github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/hail-pas/GinStartKit/api/schema/common/response"
 	"github.com/hail-pas/GinStartKit/api/service"
 	"github.com/hail-pas/GinStartKit/global"
+	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
@@ -13,7 +12,7 @@ import (
 )
 
 const (
-	IdentityKey = "user"
+	IdentityKey = "uuid"
 )
 
 func GetAuthJwtMiddleware() *jwt.GinJWTMiddleware {
@@ -26,7 +25,9 @@ func GetAuthJwtMiddleware() *jwt.GinJWTMiddleware {
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*service.UserProxy); ok {
 				return jwt.MapClaims{
-					IdentityKey: v,
+					IdentityKey: v.UUID,
+					"username":  v.Username,
+					"phone":     v.Phone,
 				}
 			}
 			return jwt.MapClaims{}
@@ -34,7 +35,6 @@ func GetAuthJwtMiddleware() *jwt.GinJWTMiddleware {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			identity := claims[IdentityKey]
-			identity = identity.(service.UserProxy)
 			return identity
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {

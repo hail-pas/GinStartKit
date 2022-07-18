@@ -2,9 +2,9 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hail-pas/GinStartKit/api/schema/common/response"
 	"github.com/hail-pas/GinStartKit/api/v1/account"
 	"github.com/hail-pas/GinStartKit/api/v1/auth"
+	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/middleware"
 )
 

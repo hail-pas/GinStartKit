@@ -24,4 +24,6 @@ const (
 	MessageSingleLoginOnly     = "只能单用户登录"
 	MessageTokenGenerateFailed = "Token生成失败"
 	MessageRetrieveUserFailed  = "获取用户信息失败"
+
+	MessagePasswordNull = "密码不能为空"
 )

@@ -3,7 +3,7 @@ BEGIN;
 drop table if exists "user";
 create table if not exists "user"
 (
-    id         bigint primary key,
+    id         bigserial primary key,
     created_at timestamptz not null,
     updated_at timestamptz not null,
     deleted_at timestamptz null
