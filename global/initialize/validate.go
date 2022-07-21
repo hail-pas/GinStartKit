@@ -13,11 +13,7 @@ var (
 	uni *ut.UniversalTranslator
 )
 
-func Validate() {
-	global.Validate = validator.New()
-}
-
-func RegisterTranslation() {
+func ValidateWithTranslation() {
 	//注册翻译器
 	zhTranslation := zh.New()
 	uni = ut.New(zhTranslation, zhTranslation)
@@ -25,9 +21,9 @@ func RegisterTranslation() {
 	global.Trans, _ = uni.GetTranslator("zhTranslation")
 
 	//获取gin的校验器
-	validate := binding.Validator.Engine().(*validator.Validate)
+	global.Validate = binding.Validator.Engine().(*validator.Validate)
 	//注册翻译器
-	err := zh_translations.RegisterDefaultTranslations(validate, global.Trans)
+	err := zh_translations.RegisterDefaultTranslations(global.Validate, global.Trans)
 	if err != nil {
 		panic(err)
 	}

@@ -1,6 +1,6 @@
 RelationalDatabase:
-  Type: Postgres
-  Addr: localhost:5432
+  Type: MySQL
+  Addr: localhost:3306
   Username: GinStartKit
   DatabaseName: GinStartKit
   Password: 112358
