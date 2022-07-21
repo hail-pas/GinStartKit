@@ -8,7 +8,7 @@ import (
 
 func RegisterRouter(parentRouter *gin.RouterGroup) {
 	router := parentRouter.Group("/auth").Use(middleware.OperationRecord())
-	router.GET("/register", Register)
+	router.POST("/register", Register)
 	router.POST("/login", utils.GetAuthJwtMiddleware().LoginHandler)
 	router.GET("/token/refresh", utils.GetAuthJwtMiddleware().RefreshHandler)
 }

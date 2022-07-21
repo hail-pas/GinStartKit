@@ -1,19 +1,17 @@
 package model
 
-import (
-	"github.com/google/uuid"
-)
+import "github.com/google/uuid"
 
 type PasswordField struct {
-	Password string `json:"-"  gorm:"comment:用户登录密码"` // 用户登录密码
+	Password string `json:"-" binding:"min=10,max=20"` // 用户登录密码
 }
 
 type PhoneField struct {
-	Phone string `json:"phone"  gorm:"uniqueIndex;comment:用户手机号"` // 用户手机号
+	Phone string `json:"phone" binding:"required,len=11"` // 用户手机号
 }
 
 type UsernameField struct {
-	Username string `json:"userName" gorm:"uniqueIndex;comment:用户登录名"` // 用户登录名
+	Username string `json:"userName" binding:"required,min=8,max=32"` // 用户登录名
 }
 
 type UserLoginWithPhone struct {
@@ -27,11 +25,14 @@ type UserLoginWithUsername struct {
 }
 
 type UserOtherInfo struct {
-	UUID     uuid.UUID `json:"uuid" gorm:"index;comment:用户UUID"`                // 用户UUID
-	NickName string    `json:"nickName" gorm:"default:系统用户;comment:用户昵称"`       // 用户昵称
-	Avatar   string    `json:"avatar" gorm:"comment:用户头像"`                      // 用户头像
-	Email    string    `json:"email"  gorm:"comment:用户邮箱"`                      // 用户邮箱
-	Enabled  bool      `json:"enable" gorm:"default:1;comment:用户是否被禁用 1启用 0禁用"` //用户是否被禁用 1启用 0禁用
+	Nickname string `json:"nickname" binding:"required,max=64"` // 用户昵称
+	Avatar   string `json:"avatar" binding:"url,max=256"`       // 用户头像
+	Email    string `json:"email" binding:"email"`              // 用户邮箱
+	Enabled  bool   `json:"enabled"`                            //用户是否被禁用 1启用 0禁用
+}
+
+type UserSelfGenerateFields struct {
+	UUID uuid.UUID `json:"uuid" gorm:"column:uuid"` // 用户UUID
 }
 
 type User struct {
@@ -40,4 +41,5 @@ type User struct {
 	PhoneField
 	PasswordField
 	UserOtherInfo
+	UserSelfGenerateFields
 }

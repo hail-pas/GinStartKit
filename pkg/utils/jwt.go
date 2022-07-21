@@ -1,6 +1,7 @@
 package utils
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/api/service"
 	"github.com/hail-pas/GinStartKit/global"

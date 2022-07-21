@@ -9,6 +9,7 @@ import (
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -59,7 +60,7 @@ func OperationRecord() gin.HandlerFunc {
 			body, _ = json.Marshal(&m)
 		}
 		record := model.OperationRecord{
-			Ip:     c.ClientIP(),
+			Ip:     net.IP(c.ClientIP()),
 			Method: c.Request.Method,
 			Path:   c.Request.URL.Path,
 			Agent:  c.Request.UserAgent(),

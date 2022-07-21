@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/global/constant"
+	"gorm.io/gorm"
 	"strconv"
 )
 
@@ -38,6 +39,6 @@ func Paginate(c *gin.Context) func(db *gorm.DB) *gorm.DB {
 		// calculate the offset
 		offset := (pageNum - 1) * pageSize
 		// Return the database object with Offset and Limit
-		return db.Offset(offset).Limit(pageSize)
+		return db.Offset(int(offset)).Limit(int(pageSize))
 	}
 }

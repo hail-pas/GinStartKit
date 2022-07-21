@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"github.com/hail-pas/GinStartKit/global/constant"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func PasswordHash(password string) (string, error) {

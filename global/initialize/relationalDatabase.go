@@ -36,7 +36,7 @@ func GormDB() {
 	} else {
 		pgsqlConfig := postgres.Config{
 			DSN:                  relationalDatabaseConfig.Dsn(), // DSN data source name
-			PreferSimpleProtocol: false,
+			PreferSimpleProtocol: true,
 		}
 		if db, err = gorm.Open(postgres.New(pgsqlConfig), gormConfig); err != nil {
 			panic(err)

@@ -11,6 +11,8 @@ import (
 )
 
 type Config struct {
+	BaseDir            string
+	ConfigFilePath     string
 	RelationalDatabase RelationalDatabaseConfig
 	Redis              RedisConfig
 	System             SystemConfig
@@ -21,26 +23,29 @@ type Config struct {
 }
 
 func SetConfig(configPath string) *Config {
-	path := "./config/content/"
-	file := "default"
-	ext := "yaml"
-	if configPath != "" {
-		path = filepath.Dir(configPath)
-		fileName := filepath.Base(configPath)
-		splitFileName := strings.Split(fileName, ".")
-		if len(splitFileName) != 2 {
-			panic("Config path error")
-		}
-		file, ext = splitFileName[0], splitFileName[1]
+	if configPath == "" {
+		configPath = "./config/content/default.yaml"
 	}
+	configPath, err := filepath.Abs(configPath)
+	if err != nil {
+		panic(err)
+	}
+	path := filepath.Dir(configPath)
+	fileName := filepath.Base(configPath)
+	splitFileName := strings.Split(fileName, ".")
+	if len(splitFileName) != 2 {
+		panic("Config path error")
+	}
+	file, ext := splitFileName[0], splitFileName[1]
 	viper.SetConfigName(file)
 	viper.AddConfigPath(path)
 	viper.SetConfigType(ext)
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 	if err != nil {
 		panic(err)
 	}
 	config := Config{}
+	config.ConfigFilePath = configPath
 	setRelationalDatabase(&config)
 	setRedis(&config)
 	setSystem(&config)
