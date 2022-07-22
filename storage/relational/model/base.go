@@ -2,11 +2,12 @@ package model
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
 type BaseModel struct {
-	ID        int64          `gorm:"primaryKey" json:"Version"`
-	CreatedAt int64          `gorm:"autoCreateTime:milli" json:"createdAt"`
-	UpdatedAt int64          `gorm:"autoUpdateTime:milli" json:"updatedAt"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"deletedAt"`
+	ID        int64          `json:"id"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 }

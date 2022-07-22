@@ -20,7 +20,4 @@ func RegisterMiddlewares(r *gin.Engine) {
 			MaxAge:           time.Duration(global.Configuration.System.CorsConfig.MaxAge) * time.Second,
 		}))
 	}
-
-	r.Use()
-	r.Use(BodyParser())
 }

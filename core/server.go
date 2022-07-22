@@ -16,7 +16,7 @@ func initializeGlobal(configPath string) {
 	initialize.Configuration(configPath)
 	initialize.Redis()
 	initialize.GormDB()
-	initialize.ValidateWithTranslation()
+	initialize.ValidateWithTranslation("zh")
 }
 
 func main() {

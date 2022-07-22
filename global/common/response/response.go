@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/hail-pas/GinStartKit/global"
+	"github.com/hail-pas/GinStartKit/global/common/utils"
 	"github.com/hail-pas/GinStartKit/global/constant"
 	"math"
 	"net/http"
@@ -76,17 +77,19 @@ func FailWithMessage(c *gin.Context, message string) {
 	Response(c, constant.CodeError, nil, message, -1, -1, -1)
 }
 func BadRequest(c *gin.Context, message string) {
-	Response(c, constant.CodeInvalidRequest, nil, message, -1, -1, -1)
+	Response(c, constant.CodeBadRequest, nil, message, -1, -1, -1)
 }
 
-func Translate(err error) map[string][]string {
-
-	var result = make(map[string][]string)
-
-	errors := err.(validator.ValidationErrors)
-
-	for _, err := range errors {
-		result[err.Field()] = append(result[err.Field()], err.Translate(global.Trans))
+func ErrorResp(c *gin.Context, err error) {
+	if validateError, ok := err.(validator.ValidationErrors); !ok {
+		Response(c, constant.CodeBadRequest, nil, err.Error(), -1, -1, -1)
+	} else {
+		Response(
+			c,
+			constant.CodeBadRequest,
+			nil,
+			utils.ObtainFirstValueOfValidationErrorsTranslations(validateError.Translate(global.Translator)),
+			-1, -1, -1,
+		)
 	}
-	return result
 }

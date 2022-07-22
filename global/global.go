@@ -15,7 +15,7 @@ var (
 	RedisCtx           context.Context
 	RelationalDatabase *gorm.DB
 
-	Validate *validator.Validate
-	Trans    ut.Translator
+	Validate   *validator.Validate
+	Translator ut.Translator
 	//Hbase
 )

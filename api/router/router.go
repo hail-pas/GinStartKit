@@ -15,20 +15,21 @@ func RootEngine() *gin.Engine {
 		panic(err)
 	}
 	middleware.RegisterMiddlewares(rootRouter)
-	PublicGroup := rootRouter.Group("")
+	vqRouter := rootRouter.Group("/api/v1")
+	PublicGroup := vqRouter.Group("")
 	{
-		// 健康监测
+		// health
 		PublicGroup.GET("/health", func(c *gin.Context) {
 			response.Ok(c)
 		})
+		// Auth
+		auth.RegisterRouter(PublicGroup)
 	}
-	PrivateGroup := rootRouter.Group("/api/v1")
-
-	// Auth
-	{
-		auth.RegisterRouter(PrivateGroup)
-	}
-
+	PrivateGroup := vqRouter.Group("")
+	PrivateGroup.Use(
+		middleware.AuthMiddlewareFunc(),
+		middleware.OperationRecord(),
+	)
 	// Account
 	{
 		account.RegisterRouter(PrivateGroup)

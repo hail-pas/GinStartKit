@@ -3,15 +3,15 @@ package model
 import "github.com/google/uuid"
 
 type PasswordField struct {
-	Password string `json:"-" binding:"min=10,max=20"` // 用户登录密码
+	Password string `json:"password" binding:"min=10,max=20" label:"密码"` // 用户登录密码
 }
 
 type PhoneField struct {
-	Phone string `json:"phone" binding:"required,len=11"` // 用户手机号
+	Phone string `json:"phone" binding:"required,len=11" label:"手机号"` // 用户手机号
 }
 
 type UsernameField struct {
-	Username string `json:"userName" binding:"required,min=8,max=32"` // 用户登录名
+	Username string `json:"username" binding:"required,min=6,max=32" label:"用户名"` // 用户登录名
 }
 
 type UserLoginWithPhone struct {
@@ -25,10 +25,10 @@ type UserLoginWithUsername struct {
 }
 
 type UserOtherInfo struct {
-	Nickname string `json:"nickname" binding:"required,max=64"` // 用户昵称
-	Avatar   string `json:"avatar" binding:"url,max=256"`       // 用户头像
-	Email    string `json:"email" binding:"email"`              // 用户邮箱
-	Enabled  bool   `json:"enabled"`                            //用户是否被禁用 1启用 0禁用
+	Nickname string `json:"nickname" binding:"required,max=64" label:"昵称"`        // 用户昵称
+	Avatar   string `json:"avatar" binding:"omitempty,url,max=256" label:"头像URL"` // 用户头像
+	Email    string `json:"email" binding:"omitempty,email" label:"邮箱"`           // 用户邮箱
+	Enabled  bool   `json:"enabled" label:"启用状态"`                                 //用户是否被禁用 1启用 0禁用
 }
 
 type UserSelfGenerateFields struct {
