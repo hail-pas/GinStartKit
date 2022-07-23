@@ -38,7 +38,7 @@ comment on column "user".enabled is '是否启用';
 drop table if exists "operation_record";
 create table if not exists "operation_record"
 (
-    id            bigint primary key,
+    id            bigserial primary key,
     created_at    timestamptz not null,
     updated_at    timestamptz not null,
     deleted_at    timestamptz null,

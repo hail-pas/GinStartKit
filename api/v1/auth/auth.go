@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/hail-pas/GinStartKit/api/service/auth"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/global/common/utils"
@@ -10,13 +11,6 @@ import (
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
 	"github.com/jinzhu/copier"
 )
-
-type UserRegisterIn struct {
-	model.UsernameField
-	model.PhoneField
-	model.UserOtherInfo
-	model.PasswordField
-}
 
 // Register
 // @Tags Auth
@@ -26,7 +20,7 @@ type UserRegisterIn struct {
 // @Router /api/auth/register [post]
 func Register(c *gin.Context) {
 
-	var userRegisterIn UserRegisterIn
+	var userRegisterIn auth.UserRegisterIn
 
 	err := c.ShouldBindJSON(&userRegisterIn)
 	if err != nil {

@@ -1,7 +1,7 @@
 RelationalDatabase:
   Type: Postgres
   Addr: localhost:5432
-  Username: GinStartKit
+  Username: postgres
   DatabaseName: GinStartKit
   Password: 112358
   PathPAram:

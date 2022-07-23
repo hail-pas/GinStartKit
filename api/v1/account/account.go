@@ -2,6 +2,7 @@ package account
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hail-pas/GinStartKit/api/service/account"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/global/common/utils"
@@ -9,7 +10,10 @@ import (
 )
 
 func List(c *gin.Context) {
-	var users []model.User
-	global.RelationalDatabase.Find(&users).Scopes(utils.Paginate(c))
-	response.OkWithPageData(c, users, 12, 10, 129)
+	var total int64
+	var users []account.UserResponseModel
+	pageNum, pageSize := utils.GetNumSize(c)
+	global.RelationalDatabase.Model(&model.User{}).Scopes(utils.Paginate(c)).Find(&users)
+	global.RelationalDatabase.Model(&model.User{}).Count(&total)
+	response.OkWithPageData(c, users, pageSize, pageNum, total)
 }

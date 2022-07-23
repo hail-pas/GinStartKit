@@ -6,28 +6,28 @@ import (
 	"strconv"
 )
 
-func GetNumSize(c *gin.Context) (int64, int64, error) {
+func GetNumSize(c *gin.Context) (int64, int64) {
 	pageNum, err := strconv.ParseInt(c.Query("pageNum"), 10, 64)
 	if err != nil {
-		return 0, 0, err
+		pageNum = 1
 	}
 	if pageNum <= 0 {
-		return 0, 0, err
+		pageNum = 1
 	}
 	pageSize, err := strconv.ParseInt(c.Query("pageSize"), 10, 64)
 
 	if err != nil {
-		return 0, 0, err
+		pageSize = 10
 	}
 	if pageSize <= 0 {
-		return 0, 0, err
+		pageSize = 10
 	}
-	return pageNum, pageSize, nil
+	return pageNum, pageSize
 
 }
 
 func Paginate(c *gin.Context) func(db *gorm.DB) *gorm.DB {
-	pageNum, pageSize, _ := GetNumSize(c)
+	pageNum, pageSize := GetNumSize(c)
 	return func(db *gorm.DB) *gorm.DB {
 		// calculate the offset
 		offset := (pageNum - 1) * pageSize
