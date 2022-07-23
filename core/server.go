@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/fvbock/endless"
-	"github.com/hail-pas/GinStartKit/api/router"
+	"github.com/hail-pas/GinStartKit/api"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/initialize"
 	"github.com/rs/zerolog/log"
@@ -27,7 +27,7 @@ func main() {
 
 	log.Info().Msgf("%+v", global.Configuration)
 
-	engine := router.RootEngine()
+	engine := api.RootEngine()
 
 	serverAddress := fmt.Sprintf(
 		"%s:%d",

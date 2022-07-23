@@ -111,7 +111,6 @@ func OperationRecord() gin.HandlerFunc {
 				defer respPool.Put(newBody[:0])
 			}
 		}
-		log.Info().Msgf("%v", record.Ip.String())
 		global.RelationalDatabase.Create(&record)
 	}
 }
