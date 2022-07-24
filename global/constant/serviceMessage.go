@@ -7,10 +7,6 @@ const (
 	CodeBadRequest   = 400
 	CodeUnauthorized = 401
 	CodeForbidden    = 403
-
-	CodeErrorTokenParseFailed = 10001
-	CodeErrorTokenExpire      = 10001
-	CodeErrorSingleLoginOnly  = 10001
 )
 
 const (

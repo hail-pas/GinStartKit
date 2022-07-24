@@ -124,6 +124,10 @@ func AuthMiddlewareFunc() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claims, err := authMiddleware.GetClaimsFromJWT(c)
 		if err != nil {
+			if err.Error() == "Token is expired" {
+				unauthorized(c, constant.CodeUnauthorized, authMiddleware.HTTPStatusMessageFunc(errors.New(constant.MessageTokenExpire), c))
+				return
+			}
 			unauthorized(c, constant.CodeUnauthorized, authMiddleware.HTTPStatusMessageFunc(err, c))
 			return
 		}
