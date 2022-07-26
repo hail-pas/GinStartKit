@@ -11,3 +11,9 @@ type BaseModel struct {
 	UpdatedAt time.Time      `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt"`
 }
+
+type UniqueCodeBase struct {
+	Code        string `json:"code" label:"唯一标识" binding:"required,min=1,max=32"`
+	Label       string `json:"label" label:"名称"  binding:"required,min=1,max=64"`
+	Description string `json:"description" label:"描述" binding:"omitempty,max=255"`
+}

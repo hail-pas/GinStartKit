@@ -23,12 +23,15 @@ func RootEngine() *gin.Engine {
 		PublicGroup.GET("/health", func(c *gin.Context) {
 			response.Ok(c)
 		})
+		PublicGroup.GET("/health1", func(c *gin.Context) {
+			response.Ok(c)
+		})
 		// Auth
 		auth.RegisterRouter(PublicGroup)
 	}
 	PrivateGroup := v1Router.Group("")
 	PrivateGroup.Use(
-		middleware.AuthMiddlewareFunc(),
+		middleware.AuthMiddlewareFunc(), middleware.PermissionChecker(),
 	)
 	requestRecordGroup := PrivateGroup.Group("")
 	requestRecordGroup.Use(

@@ -42,4 +42,5 @@ type User struct {
 	PasswordField
 	UserOtherInfo
 	UserSelfGenerateFields
+	SystemIDField
 }

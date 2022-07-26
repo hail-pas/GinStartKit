@@ -1,4 +1,24 @@
 begin;
+--创建更新时间戳trigger
+CREATE OR REPLACE FUNCTION func_create_set_timestamp()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    NEW.created_at = NOW();
+    new.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION func_update_set_timestamp()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    new.created_at = old.created_at;
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 --创建用户
 drop table if exists "user";
 create table if not exists "user"
@@ -14,7 +34,8 @@ create table if not exists "user"
     nickname   varchar(64)  not null,
     avatar     varchar(256) null,
     email      varchar(256) null,
-    enabled    bool default false
+    enabled    bool default false,
+    system_id  bigint       not null
 );
 create index if not exists uuid_index on "user" (uuid);
 create unique index if not exists phone_unique on "user" (phone);
@@ -58,27 +79,6 @@ comment on column "request_record".id is '主键bigint';
 comment on column "request_record".created_at is '创建时间戳';
 comment on column "request_record".updated_at is '更新时间戳';
 comment on column "request_record".deleted_at is '删除时间戳';
-
---创建更新时间戳trigger
-CREATE OR REPLACE FUNCTION func_create_set_timestamp()
-    RETURNS TRIGGER AS
-$$
-BEGIN
-    NEW.created_at = NOW();
-    new.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION func_update_set_timestamp()
-    RETURNS TRIGGER AS
-$$
-BEGIN
-    new.created_at = old.created_at;
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_create_set
     BEFORE INSERT

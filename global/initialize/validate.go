@@ -8,6 +8,7 @@ import (
 	enTranslations "github.com/go-playground/validator/v10/translations/en"
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/hail-pas/GinStartKit/global"
+	"github.com/hail-pas/GinStartKit/global/constant"
 	"reflect"
 	"strings"
 )
@@ -18,6 +19,7 @@ var (
 
 func ValidateWithTranslation(locale string) {
 	//注册翻译器
+	global.BreakError = constant.BreakError{}
 	zhTranslation := zh.New()
 	uni = ut.New(zhTranslation, zhTranslation)
 

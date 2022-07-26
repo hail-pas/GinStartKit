@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/go-redis/redis/v8"
 	"github.com/hail-pas/GinStartKit/config"
+	"github.com/hail-pas/GinStartKit/global/constant"
 	"gorm.io/gorm"
 )
 
@@ -17,5 +18,6 @@ var (
 
 	Validate   *validator.Validate
 	Translator ut.Translator
+	BreakError constant.BreakError
 	//Hbase
 )

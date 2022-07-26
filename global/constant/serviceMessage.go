@@ -4,18 +4,20 @@ const (
 	CodeSuccess = 0
 	CodeError   = 1000
 
-	CodeBadRequest   = 400
-	CodeUnauthorized = 401
-	CodeForbidden    = 403
+	CodeBadRequest      = 400
+	CodeUnauthorized    = 401
+	CodeForbidden       = 403
+	CodeContentNotFound = 404
 )
 
 const (
 	MessageSuccess = "success"
 	MessageError   = "fail"
 
-	MessageBadRequest   = "无效请求"
-	MessageUnauthorized = "未授权"
-	MessageForbidden    = "无权限"
+	MessageBadRequest      = "无效请求"
+	MessageUnauthorized    = "未授权"
+	MessageForbidden       = "无权限"
+	MessageContentNotFound = "%v不存在"
 
 	MessageTokenParseFailed    = "token解析失败"
 	MessageTokenExpire         = "token过期"
