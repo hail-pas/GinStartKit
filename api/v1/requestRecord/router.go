@@ -1,10 +1,10 @@
-package operationRecord
+package requestRecord
 
 import (
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRouter(parentRouter *gin.RouterGroup) {
-	router := parentRouter.Group("/operationRecord")
+	router := parentRouter.Group("/requestRecord")
 	router.GET("", List)
 }

@@ -15,6 +15,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/google/uuid v1.3.0
+	github.com/jackc/pgtype v1.11.0 // indirect
 	github.com/jinzhu/copier v0.3.5
 	github.com/lib/pq v1.10.6 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.2 // indirect

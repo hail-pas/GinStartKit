@@ -13,7 +13,7 @@ func List(c *gin.Context) {
 	var total int64
 	var users []account.UserResponseModel
 	pageNum, pageSize := utils.GetNumSize(c)
-	global.RelationalDatabase.Model(&model.User{}).Scopes(utils.Paginate(c)).Find(&users)
+	global.RelationalDatabase.Model(&model.User{}).Order("id DESC").Scopes(utils.Paginate(c)).Find(&users)
 	global.RelationalDatabase.Model(&model.User{}).Count(&total)
 	response.OkWithPageData(c, users, pageSize, pageNum, total)
 }

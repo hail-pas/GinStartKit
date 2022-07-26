@@ -5,6 +5,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 )
 
@@ -19,6 +20,10 @@ func GormDB() {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
+	}
+
+	if global.Configuration.System.Debug {
+		gormConfig.Logger = logger.Default.LogMode(logger.Info)
 	}
 
 	var db *gorm.DB

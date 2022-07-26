@@ -35,29 +35,29 @@ comment on column "user".enabled is '是否启用';
 
 
 --创建请求记录表
-drop table if exists "operation_record";
-create table if not exists "operation_record"
+drop table if exists "request_record";
+create table if not exists "request_record"
 (
     id            bigserial primary key,
     created_at    timestamptz not null,
     updated_at    timestamptz not null,
     deleted_at    timestamptz null,
-    ip            cidr,
+    ip            inet,
     method        varchar(16),
     path          varchar(256),
     status        int,
-    latency       interval second(0),
+    latency       interval second(6),
     agent         varchar(128),
     error_message varchar(256),
     body          varchar(512),
     resp          varchar(512),
     user_id       bigint
 );
-comment on table "operation_record" is '操作记录表';
-comment on column "operation_record".id is '主键bigint';
-comment on column "operation_record".created_at is '创建时间戳';
-comment on column "operation_record".updated_at is '更新时间戳';
-comment on column "operation_record".deleted_at is '删除时间戳';
+comment on table "request_record" is '操作记录表';
+comment on column "request_record".id is '主键bigint';
+comment on column "request_record".created_at is '创建时间戳';
+comment on column "request_record".updated_at is '更新时间戳';
+comment on column "request_record".deleted_at is '删除时间戳';
 
 --创建更新时间戳trigger
 CREATE OR REPLACE FUNCTION func_create_set_timestamp()
@@ -94,13 +94,13 @@ EXECUTE PROCEDURE func_update_set_timestamp();
 
 CREATE TRIGGER trigger_create_set
     BEFORE INSERT
-    ON "operation_record"
+    ON "request_record"
     FOR EACH ROW
 EXECUTE PROCEDURE func_create_set_timestamp();
 
 CREATE TRIGGER trigger_update_set
     BEFORE UPDATE
-    ON "operation_record"
+    ON "request_record"
     FOR EACH ROW
 EXECUTE PROCEDURE func_update_set_timestamp();
 commit;

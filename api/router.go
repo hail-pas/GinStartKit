@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/api/v1/account"
 	"github.com/hail-pas/GinStartKit/api/v1/auth"
-	"github.com/hail-pas/GinStartKit/api/v1/operationRecord"
+	"github.com/hail-pas/GinStartKit/api/v1/requestRecord"
 	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/middleware"
 )
@@ -30,17 +30,17 @@ func RootEngine() *gin.Engine {
 	PrivateGroup.Use(
 		middleware.AuthMiddlewareFunc(),
 	)
-	operationRecordGroup := PrivateGroup.Group("")
-	operationRecordGroup.Use(
-		middleware.OperationRecord(),
+	requestRecordGroup := PrivateGroup.Group("")
+	requestRecordGroup.Use(
+		middleware.RequestRecorder(),
 	)
 	// Account
 	{
-		account.RegisterRouter(operationRecordGroup)
+		account.RegisterRouter(requestRecordGroup)
 	}
-	// operationRecord
+	// requestRecord
 	{
-		operationRecord.RegisterRouter(PrivateGroup)
+		requestRecord.RegisterRouter(PrivateGroup)
 	}
 
 	return rootRouter

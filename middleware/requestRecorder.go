@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
+	"github.com/jackc/pgtype"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net"
@@ -24,7 +25,7 @@ func init() {
 	}
 }
 
-func OperationRecord() gin.HandlerFunc {
+func RequestRecorder() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userTemp, ok := c.Get(IdentityKey)
 
@@ -59,8 +60,12 @@ func OperationRecord() gin.HandlerFunc {
 
 		ip := net.ParseIP(c.ClientIP())
 
-		record := model.OperationRecord{
-			Ip:     ip,
+		var iNet pgtype.Inet
+
+		_ = iNet.Set(ip)
+
+		record := model.RequestRecord{
+			Ip:     &iNet,
 			Method: c.Request.Method,
 			Path:   c.Request.URL.Path,
 			Agent:  c.Request.UserAgent(),
@@ -91,7 +96,9 @@ func OperationRecord() gin.HandlerFunc {
 		latency := time.Since(now)
 		record.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
 		record.Status = c.Writer.Status()
-		record.Latency = latency
+		interval := &pgtype.Interval{}
+		_ = interval.Set(latency)
+		record.Latency = interval
 		record.Resp = writer.body.String()
 
 		if strings.Index(c.Writer.Header().Get("Pragma"), "public") > -1 ||

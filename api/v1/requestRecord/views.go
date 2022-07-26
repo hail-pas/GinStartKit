@@ -1,4 +1,4 @@
-package operationRecord
+package requestRecord
 
 import (
 	"github.com/gin-gonic/gin"
@@ -10,9 +10,9 @@ import (
 
 func List(c *gin.Context) {
 	var total int64
-	var operationRecords []model.OperationRecord
+	var requestRecords []model.RequestRecord
 	pageNum, pageSize := utils.GetNumSize(c)
-	global.RelationalDatabase.Model(&model.OperationRecord{}).Scopes(utils.Paginate(c)).Find(&operationRecords)
-	global.RelationalDatabase.Model(&model.OperationRecord{}).Count(&total)
-	response.OkWithPageData(c, operationRecords, pageSize, pageNum, total)
+	global.RelationalDatabase.Model(&model.RequestRecord{}).Order("id DESC").Scopes(utils.Paginate(c)).Find(&requestRecords)
+	global.RelationalDatabase.Model(&model.RequestRecord{}).Count(&total)
+	response.OkWithPageData(c, requestRecords, pageSize, pageNum, total)
 }
