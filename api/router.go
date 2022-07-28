@@ -5,8 +5,13 @@ import (
 	"github.com/hail-pas/GinStartKit/api/v1/account"
 	"github.com/hail-pas/GinStartKit/api/v1/auth"
 	"github.com/hail-pas/GinStartKit/api/v1/requestRecord"
+	"github.com/hail-pas/GinStartKit/api/v1/role"
+	"github.com/hail-pas/GinStartKit/api/v1/system"
+	systemReource "github.com/hail-pas/GinStartKit/api/v1/systemResource"
+	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/middleware"
+	"time"
 )
 
 func RootEngine() *gin.Engine {
@@ -21,13 +26,15 @@ func RootEngine() *gin.Engine {
 	{
 		// health
 		PublicGroup.GET("/health", func(c *gin.Context) {
-			response.Ok(c)
-		})
-		PublicGroup.GET("/health1", func(c *gin.Context) {
-			response.Ok(c)
+			response.OkWithData(c, gin.H{
+				"status":      "ok",
+				"timestamp":   time.Now(),
+				"environment": global.Configuration.System.Environment,
+			})
 		})
 		// Auth
 		auth.RegisterRouter(PublicGroup)
+		system.RegisterRouter(PublicGroup)
 	}
 	PrivateGroup := v1Router.Group("")
 	PrivateGroup.Use(
@@ -44,6 +51,14 @@ func RootEngine() *gin.Engine {
 	// requestRecord
 	{
 		requestRecord.RegisterRouter(PrivateGroup)
+	}
+	// role
+	{
+		role.RegisterRouter(PrivateGroup)
+	}
+	// systemResource
+	{
+		systemReource.RegisterRouter(PrivateGroup)
 	}
 
 	return rootRouter

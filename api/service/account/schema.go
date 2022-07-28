@@ -7,4 +7,5 @@ type UserResponseModel struct {
 	model.UsernameField
 	model.PhoneField
 	model.UserOtherInfo
+	Systems []model.System `json:"systems"`
 }

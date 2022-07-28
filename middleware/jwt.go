@@ -78,7 +78,7 @@ func GetAuthJwtMiddleware() *jwt.GinJWTMiddleware {
 			return true
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			response.Response(c, code, nil, message, -1, -1, -1)
+			response.Response[interface{}](c, code, nil, message, -1, -1, -1)
 		},
 		TokenLookup:   "header: Authorization",
 		TokenHeadName: global.Configuration.Jwt.AuthHeaderPrefix,

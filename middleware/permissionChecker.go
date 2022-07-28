@@ -6,6 +6,7 @@ import (
 	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/global/constant"
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
+	"github.com/rs/zerolog/log"
 )
 
 func hasPerm(handlerNAme string, userId int64) bool {
@@ -22,7 +23,7 @@ func PermissionChecker() gin.HandlerFunc {
 		userTemp, ok := c.Get(IdentityKey)
 
 		if !ok {
-			response.Response(c, constant.CodeForbidden, nil, constant.MessageForbidden, -1, -1, -1)
+			response.Response[any](c, constant.CodeForbidden, nil, constant.MessageForbidden, -1, -1, -1)
 			c.Abort()
 		}
 
@@ -30,8 +31,9 @@ func PermissionChecker() gin.HandlerFunc {
 
 		handlerName := c.HandlerName()
 		if !hasPerm(handlerName, user.ID) {
-			response.Response(c, constant.CodeForbidden, nil, constant.MessageForbidden, -1, -1, -1)
-			c.Abort()
+			//response.Response[any](c, constant.CodeForbidden, nil, constant.MessageForbidden, -1, -1, -1)
+			//c.Abort()
+			log.Info().Msgf("无权限")
 		}
 	}
 }

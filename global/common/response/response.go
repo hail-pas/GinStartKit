@@ -17,27 +17,27 @@ type PageInfo struct {
 	PageSize   int64 `json:"pageSize"`
 }
 
-type response struct {
-	Code    int         `json:"code"`
-	Data    interface{} `json:"data"`
-	Message string      `json:"message"`
+type Resp[T any] struct {
+	Code    int    `json:"code"`
+	Data    T      `json:"data"`
+	Message string `json:"message"`
 }
 
-type WithPageInfo struct {
-	response
+type WithPageInfo[T any] struct {
+	Resp[T]
 	PageInfo PageInfo `json:"pageInfo"`
 }
 
-func Response(c *gin.Context, code int, data interface{}, message string, pageSize, pageNum, totalCount int64) {
+func Response[T any](c *gin.Context, code int, data T, message string, pageSize, pageNum, totalCount int64) {
 	if pageSize == -1 && pageNum == -1 && totalCount == -1 {
-		c.JSON(http.StatusOK, response{
+		c.JSON(http.StatusOK, Resp[T]{
 			Code:    code,
 			Data:    data,
 			Message: message,
 		})
 	} else {
-		c.JSON(http.StatusOK, WithPageInfo{
-			response: response{
+		c.JSON(http.StatusOK, WithPageInfo[T]{
+			Resp: Resp[T]{
 				Code:    code,
 				Data:    data,
 				Message: message,
@@ -50,46 +50,48 @@ func Response(c *gin.Context, code int, data interface{}, message string, pageSi
 			},
 		})
 	}
+}
 
+func WithoutPageInfo[T any](c *gin.Context, code int, data T, message string) {
+	Response[T](c, code, data, message, -1, -1, -1)
 }
 
 func Ok(c *gin.Context) {
-	Response(c, constant.CodeSuccess, nil, constant.MessageSuccess, -1, -1, -1)
+	WithoutPageInfo[any](c, constant.CodeSuccess, nil, constant.MessageSuccess)
 }
 
 func OkWithMessage(c *gin.Context, message string) {
-	Response(c, constant.CodeSuccess, nil, message, -1, -1, -1)
+	WithoutPageInfo[any](c, constant.CodeSuccess, nil, message)
 }
 
-func OkWithData(c *gin.Context, data interface{}) {
-	Response(c, constant.CodeSuccess, data, constant.MessageSuccess, -1, -1, -1)
+func OkWithData[T any](c *gin.Context, data T) {
+	WithoutPageInfo[T](c, constant.CodeSuccess, data, constant.MessageSuccess)
 }
 
-func OkWithPageData(c *gin.Context, data interface{}, pageSize, pageNum, totalCount int64) {
-	Response(c, constant.CodeSuccess, data, constant.MessageSuccess, pageSize, pageNum, totalCount)
+func OkWithPageData[T any](c *gin.Context, data T, pageSize, pageNum, totalCount int64) {
+	Response[T](c, constant.CodeSuccess, data, constant.MessageSuccess, pageSize, pageNum, totalCount)
 }
 
 func Fail(c *gin.Context) {
-	Response(c, constant.CodeError, nil, constant.MessageError, -1, -1, -1)
+	WithoutPageInfo[any](c, constant.CodeError, nil, constant.MessageError)
 }
 
 func FailWithMessage(c *gin.Context, message string) {
-	Response(c, constant.CodeError, nil, message, -1, -1, -1)
+	WithoutPageInfo[any](c, constant.CodeError, nil, message)
 }
 func BadRequest(c *gin.Context, message string) {
-	Response(c, constant.CodeBadRequest, nil, message, -1, -1, -1)
+	WithoutPageInfo[any](c, constant.CodeBadRequest, nil, message)
 }
 
 func ErrorResp(c *gin.Context, err error) {
 	if validateError, ok := err.(validator.ValidationErrors); !ok {
-		Response(c, constant.CodeBadRequest, nil, err.Error(), -1, -1, -1)
+		Response[any](c, constant.CodeBadRequest, nil, err.Error(), -1, -1, -1)
 	} else {
-		Response(
+		WithoutPageInfo[any](
 			c,
 			constant.CodeBadRequest,
 			nil,
 			utils.ObtainFirstValueOfValidationErrorsTranslations(validateError.Translate(global.Translator)),
-			-1, -1, -1,
 		)
 	}
 }

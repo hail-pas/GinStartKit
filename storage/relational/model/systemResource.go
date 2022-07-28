@@ -1,18 +1,14 @@
 package model
 
-import (
-	"net/url"
-)
-
 type SystemResource struct {
 	BaseModel
 	UniqueCodeBase
 	ParentId       int64           `json:"parentId" label:"父节点ID"`
-	Parent         *SystemResource `json:"parent"  label:"父节点"`
+	Parent         *SystemResource `json:"parent"  label:"父节点" gorm:"foreignKey:ParentId"`
 	ReferenceToId  int64           `json:"referenceToId" label:"跳转节点ID"`
-	ReferenceTo    *SystemResource `json:"referenceTo" label:"跳转节点"`
+	ReferenceTo    *SystemResource `json:"referenceTo" label:"跳转节点" gorm:"foreignKey:ReferenceToId"`
 	FrontRoutePath string          `json:"frontRoutePath" label:"前端路由"`
-	IconPath       *url.URL        `json:"iconPath" label:"图标地址"`
+	IconPath       string          `json:"iconPath" label:"图标地址"`
 	Type           string          `json:"type"`
 	OrderNum       int             `json:"orderNum"`
 	Enabled        bool            `json:"enabled"`

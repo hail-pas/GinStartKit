@@ -1,4 +1,13 @@
 BEGIN;
+drop table if exists "system_with_user";
+drop table if exists "system_resource_with_permission";
+drop table if exists "role_with_system_resource";
+drop table if exists "system_with_system_resource";
+drop table if exists "permission";
+drop table if exists "system_resource";
+drop type if exists "system_resource_type";
+drop table if exists "role";
+drop table if exists "system";
 drop table if exists "request_record";
 drop table if exists "user";
 drop function if exists "func_update_set_timestamp";

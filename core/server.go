@@ -19,6 +19,12 @@ func initializeGlobal(configPath string) {
 	initialize.ValidateWithTranslation("zh")
 }
 
+// @title GInStartKit
+// @version 1.0
+// @description Start Kit of Gin
+// @termsOfService https://github.com/hail-pas/GinStartKit
+// @license.name MIT
+//@license.url https://github.com/hail-pas/GinStartKit
 func main() {
 	configFile := flag.String("conf", "./config/content/default.yaml", "Path to the configuration file")
 	flag.Parse()

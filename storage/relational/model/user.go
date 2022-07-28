@@ -42,5 +42,9 @@ type User struct {
 	PasswordField
 	UserOtherInfo
 	UserSelfGenerateFields
-	SystemIDField
+	Systems []System `json:"systems" gorm:"many2many:system_with_user;joinForeignKey:UserID;joinReferences:SystemID" label:"系统列表"`
+}
+
+type UserIDField struct {
+	UserId int64 `json:"userId" binding:"required,min=1" label:"用户ID"`
 }

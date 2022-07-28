@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/response"
+	"github.com/hail-pas/GinStartKit/global/common/utils"
 	"github.com/hail-pas/GinStartKit/global/constant"
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
 )
@@ -14,7 +15,7 @@ type UserRegisterIn struct {
 	model.PhoneField
 	model.UserOtherInfo
 	model.PasswordField
-	model.SystemIDField
+	SystemIds []int64 `json:"systemIds" binding:"gt=0,dive,min=1,required" label:"系统IDs"`
 }
 
 func ValidateRegisterIn(c *gin.Context) (*UserRegisterIn, error) {
@@ -26,44 +27,44 @@ func ValidateRegisterIn(c *gin.Context) (*UserRegisterIn, error) {
 		return nil, err
 	}
 
-	var exists bool
+	userRegisterIn.SystemIds = new(utils.Set[int64]).Set(userRegisterIn.SystemIds...).Array()
 
-	err = global.RelationalDatabase.Table("system").Select("id").Where(
-		"id = ?",
-		userRegisterIn.SystemId,
-	).Find(&exists).Error
+	existed := true
+	for _, systemId := range userRegisterIn.SystemIds {
+		err = global.RelationalDatabase.Model(model.System{}).Select("count(*) > 0").Where(
+			"id = ?",
+			systemId,
+		).Find(&existed).Error
 
-	if err != nil || !exists {
-		response.Response(
-			c,
-			constant.CodeContentNotFound,
-			nil,
-			fmt.Sprintf(constant.MessageContentNotFound, fmt.Sprintf("ID为%d的系统", userRegisterIn.SystemId)),
-			-1,
-			-1,
-			-1,
-		)
-		return nil, global.BreakError
+		if err != nil || !existed {
+			response.WithoutPageInfo[any](
+				c,
+				constant.CodeContentNotFound,
+				nil,
+				fmt.Sprintf(constant.MessageContentNotFound, fmt.Sprintf("ID为%d的系统", systemId)),
+			)
+			return nil, global.BreakError
+		}
 	}
 
-	exists = false
+	existed = false
 
-	err = global.RelationalDatabase.Model(model.User{}).Select("id").Where(
+	err = global.RelationalDatabase.Model(model.User{}).Select("count(*) > 0").Where(
 		"username = ?",
 		userRegisterIn.Username,
-	).Find(&exists).Error
+	).Find(&existed).Error
 
-	if err != nil || exists {
+	if err != nil || existed {
 		response.FailWithMessage(c, constant.UserWithUsernameExisted)
 		return nil, global.BreakError
 	}
 
-	err = global.RelationalDatabase.Model(model.User{}).Select("id").Where(
+	err = global.RelationalDatabase.Model(model.User{}).Select("count(*) > 0").Where(
 		"phone = ?",
 		userRegisterIn.Phone,
-	).Find(&exists).Error
+	).Find(&existed).Error
 
-	if err != nil || exists {
+	if err != nil || existed {
 		response.FailWithMessage(c, constant.UserWithPhoneExisted)
 		return nil, global.BreakError
 	}
