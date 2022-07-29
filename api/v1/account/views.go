@@ -9,11 +9,31 @@ import (
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
 )
 
+// List 用户列表
+// @Tags Account
+// @Summary 用户列表
+// @ID get-account-list
+// @Security Jwt
+// @accept application/x-www-form-urlencoded
+// @Produce json
+// @Param "pageParam" query request.PageRequestIn true "翻页参数"
+// @Success 200 {object} response.WithPageInfo{data=[]account.UserResponseModel} 成功
+// @Router /account [get]
 func List(c *gin.Context) {
+
 	var total int64
 	var users []account.UserResponseModel
 	pageNum, pageSize := utils.GetNumSize(c)
-	global.RelationalDatabase.Model(&model.User{}).Preload("Systems").Order("id DESC").Scopes(utils.Paginate(c)).Find(&users)
+	global.RelationalDatabase.
+		Model(&model.User{}).
+		Preload("Systems").
+		Order("id DESC").
+		Scopes(utils.Paginate(c)).
+		Find(&users)
 	global.RelationalDatabase.Model(&model.User{}).Count(&total)
-	response.OkWithPageData[[]account.UserResponseModel](c, users, pageSize, pageNum, total)
+	response.OkWithPageData(c, users, pageSize, pageNum, total)
 }
+
+//func Retrieve(c *gin.Context) {
+//	c.ShouldBindQuery()
+//}

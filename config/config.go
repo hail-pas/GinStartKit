@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/global/constant"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	httpPkg "net/http"
 	"path/filepath"
@@ -160,6 +161,8 @@ func setLog(c *Config) {
 	}
 
 	zerolog.SetGlobalLevel(logLevel)
+
+	log.Logger = log.With().Caller().Logger()
 
 	c.Log = logConfig
 }

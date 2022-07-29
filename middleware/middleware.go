@@ -9,7 +9,11 @@ import (
 
 func RegisterMiddlewares(r *gin.Engine) {
 	if global.Configuration.System.CorsConfig.AllowAll {
-		r.Use(cors.Default())
+		config := cors.DefaultConfig()
+		config.AllowAllOrigins = true
+		config.AllowCredentials = true
+		config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+		r.Use(cors.New(config))
 	} else {
 		r.Use(cors.New(cors.Config{
 			AllowOrigins:     global.Configuration.System.CorsConfig.AllowOrigins,

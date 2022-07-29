@@ -20,10 +20,11 @@ func hasPerm(handlerNAme string, userId int64) bool {
 
 func PermissionChecker() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		userTemp, ok := c.Get(IdentityKey)
 
 		if !ok {
-			response.Response[any](c, constant.CodeForbidden, nil, constant.MessageForbidden, -1, -1, -1)
+			response.Response(c, constant.CodeForbidden, nil, constant.MessageForbidden, -1, -1, -1)
 			c.Abort()
 		}
 

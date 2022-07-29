@@ -58,20 +58,21 @@ comment on column "user".enabled is '是否启用';
 drop table if exists "request_record";
 create table if not exists "request_record"
 (
-    id            bigserial primary key,
-    created_at    timestamptz not null,
-    updated_at    timestamptz not null,
-    deleted_at    timestamptz null,
-    ip            inet,
-    method        varchar(16),
-    path          varchar(256),
-    status        int,
-    latency       interval second(6),
-    agent         varchar(128),
-    error_message varchar(256),
-    body          varchar(512),
-    resp          varchar(512),
-    user_id       bigint
+    id         bigserial primary key,
+    created_at timestamptz not null,
+    updated_at timestamptz not null,
+    deleted_at timestamptz null,
+    client_ip  inet,
+    method     varchar(16),
+    path       varchar(256),
+    status_code int,
+    latency    interval second(6),
+    agent      varchar(128),
+    query      json,
+    form_data  json,
+    body       json,
+    resp       json,
+    user_id    bigint
 );
 comment on table "request_record" is '操作记录表';
 comment on column "request_record".id is '主键bigint';

@@ -19,12 +19,25 @@ func initializeGlobal(configPath string) {
 	initialize.ValidateWithTranslation("zh")
 }
 
-// @title GInStartKit
-// @version 1.0
-// @description Start Kit of Gin
-// @termsOfService https://github.com/hail-pas/GinStartKit
-// @license.name MIT
-//@license.url https://github.com/hail-pas/GinStartKit
+// @title 			GInStartKit
+// @version 		1.0
+// @description 	Start Kit of Gin
+// @termsOfService	https://github.com/hail-pas/GinStartKit
+
+// @license.name	MIT
+// @license.url 	https://github.com/hail-pas/GinStartKit
+
+// @contact.name   hypo-fiasco
+// @contact.url    https://github.com/hail-pas/GinStartKit
+// @contact.email  hypofiasco@gmail.com
+
+// @host 		127.0.0.1:8000
+// @BasePath 	/api/v1/
+// @schemes 	http
+
+// @securityDefinitions.apikey  Jwt
+// @in                          header
+// @name                        Authorization
 func main() {
 	configFile := flag.String("conf", "./config/content/default.yaml", "Path to the configuration file")
 	flag.Parse()

@@ -17,7 +17,7 @@ migrate create -ext sql -dir storage/relational/migrations -seq rbac
 
 func main() {
 	configFile := flag.String("conf", "./config/content/default.yaml", "Path to the configuration file")
-	migrationSource := flag.String("source", "file://./storage/relational/migrations", "Path to the migration files")
+	migrationSource := flag.String("source", "file://./storage/relational/migrations", "Path to the migration file")
 	dsn := flag.String("dsn", "", "database dsn")
 	operation := flag.String("op", "", "operation")
 	version := flag.Uint("version", 0, "version")

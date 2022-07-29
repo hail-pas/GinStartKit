@@ -1,6 +1,7 @@
 package response
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/hail-pas/GinStartKit/global"
@@ -8,6 +9,7 @@ import (
 	"github.com/hail-pas/GinStartKit/global/constant"
 	"math"
 	"net/http"
+	"time"
 )
 
 type PageInfo struct {
@@ -17,31 +19,33 @@ type PageInfo struct {
 	PageSize   int64 `json:"pageSize"`
 }
 
-type Resp[T any] struct {
-	Code    int    `json:"code"`
-	Data    T      `json:"data"`
-	Message string `json:"message"`
-}
+type Resp struct {
+	Code    int       `json:"code"`
+	Data    any       `json:"data"`
+	Message string    `json:"message"`
+	Time    time.Time `json:"time"`
+} //@name Response
 
-type WithPageInfo[T any] struct {
-	Resp[T]
+type WithPageInfo struct {
+	Resp
 	PageInfo PageInfo `json:"pageInfo"`
-}
+} //@name ResponseWithPageInfo
 
-func Response[T any](c *gin.Context, code int, data T, message string, pageSize, pageNum, totalCount int64) {
+func Response(c *gin.Context, code int, data any, message string, pageSize, pageNum, totalCount int64) {
+	resp := Resp{
+		Code:    code,
+		Message: message,
+		Time:    time.Now(),
+	}
+	// 用于日志记录
+	simpleResp, _ := json.Marshal(resp)
+	c.Set("simpleResp", simpleResp)
+	resp.Data = data
 	if pageSize == -1 && pageNum == -1 && totalCount == -1 {
-		c.JSON(http.StatusOK, Resp[T]{
-			Code:    code,
-			Data:    data,
-			Message: message,
-		})
+		c.JSON(http.StatusOK, resp)
 	} else {
-		c.JSON(http.StatusOK, WithPageInfo[T]{
-			Resp: Resp[T]{
-				Code:    code,
-				Data:    data,
-				Message: message,
-			},
+		c.JSON(http.StatusOK, WithPageInfo{
+			Resp: resp,
 			PageInfo: PageInfo{
 				TotalPage:  int64(math.Ceil(float64(totalCount) / float64(pageSize))),
 				TotalCount: totalCount,
@@ -52,42 +56,42 @@ func Response[T any](c *gin.Context, code int, data T, message string, pageSize,
 	}
 }
 
-func WithoutPageInfo[T any](c *gin.Context, code int, data T, message string) {
-	Response[T](c, code, data, message, -1, -1, -1)
+func WithoutPageInfo(c *gin.Context, code int, data any, message string) {
+	Response(c, code, data, message, -1, -1, -1)
 }
 
 func Ok(c *gin.Context) {
-	WithoutPageInfo[any](c, constant.CodeSuccess, nil, constant.MessageSuccess)
+	WithoutPageInfo(c, constant.CodeSuccess, nil, constant.MessageSuccess)
 }
 
 func OkWithMessage(c *gin.Context, message string) {
-	WithoutPageInfo[any](c, constant.CodeSuccess, nil, message)
+	WithoutPageInfo(c, constant.CodeSuccess, nil, message)
 }
 
-func OkWithData[T any](c *gin.Context, data T) {
-	WithoutPageInfo[T](c, constant.CodeSuccess, data, constant.MessageSuccess)
+func OkWithData(c *gin.Context, data any) {
+	WithoutPageInfo(c, constant.CodeSuccess, data, constant.MessageSuccess)
 }
 
-func OkWithPageData[T any](c *gin.Context, data T, pageSize, pageNum, totalCount int64) {
-	Response[T](c, constant.CodeSuccess, data, constant.MessageSuccess, pageSize, pageNum, totalCount)
+func OkWithPageData(c *gin.Context, data any, pageSize, pageNum, totalCount int64) {
+	Response(c, constant.CodeSuccess, data, constant.MessageSuccess, pageSize, pageNum, totalCount)
 }
 
 func Fail(c *gin.Context) {
-	WithoutPageInfo[any](c, constant.CodeError, nil, constant.MessageError)
+	WithoutPageInfo(c, constant.CodeError, nil, constant.MessageError)
 }
 
 func FailWithMessage(c *gin.Context, message string) {
-	WithoutPageInfo[any](c, constant.CodeError, nil, message)
+	WithoutPageInfo(c, constant.CodeError, nil, message)
 }
 func BadRequest(c *gin.Context, message string) {
-	WithoutPageInfo[any](c, constant.CodeBadRequest, nil, message)
+	WithoutPageInfo(c, constant.CodeBadRequest, nil, message)
 }
 
 func ErrorResp(c *gin.Context, err error) {
 	if validateError, ok := err.(validator.ValidationErrors); !ok {
-		Response[any](c, constant.CodeBadRequest, nil, err.Error(), -1, -1, -1)
+		Response(c, constant.CodeBadRequest, nil, err.Error(), -1, -1, -1)
 	} else {
-		WithoutPageInfo[any](
+		WithoutPageInfo(
 			c,
 			constant.CodeBadRequest,
 			nil,

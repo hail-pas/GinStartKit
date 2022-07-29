@@ -4,6 +4,7 @@ import (
 	"errors"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/response"
 	"github.com/hail-pas/GinStartKit/global/common/utils"
@@ -48,12 +49,17 @@ func GetAuthJwtMiddleware() *jwt.GinJWTMiddleware {
 		Authenticator: func(c *gin.Context) (interface{}, error) {
 			var loginData model.UserLoginWithPhone
 			if err := c.ShouldBindJSON(&loginData); err != nil {
-				return "", errors.New("帐号和密码字段必填")
+				if validateError, ok := err.(validator.ValidationErrors); ok {
+					return "", errors.New(
+						utils.ObtainFirstValueOfValidationErrorsTranslations(validateError.Translate(global.Translator)),
+					)
+				}
+				return "", errors.New("帐号或密码校验不通过")
 			}
 
 			var user model.User
 
-			global.RelationalDatabase.Where("phone = ?", loginData.Phone).First(&user)
+			global.RelationalDatabase.Where("phone = ?", loginData.Phone).Preload("Systems").First(&user)
 
 			if utils.VerifyHashAndPassword(user.Password, loginData.Password) {
 				c.Set("user", user)
@@ -63,22 +69,17 @@ func GetAuthJwtMiddleware() *jwt.GinJWTMiddleware {
 			return nil, errors.New("帐号或密码错误")
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			var exists model.User
 			user, ok := data.(model.User)
 			if !ok {
 				return false
 			}
-			err := global.RelationalDatabase.Model(model.User{}).Select("id").Where(
-				"uuid = ?",
-				user.UUID.String(),
-			).Find(&exists).Error
-			if err != nil || exists.ID == 0 {
+			if user.ID == 0 {
 				return false
 			}
 			return true
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			response.Response[interface{}](c, code, nil, message, -1, -1, -1)
+			response.Response(c, code, nil, message, -1, -1, -1)
 		},
 		TokenLookup:   "header: Authorization",
 		TokenHeadName: global.Configuration.Jwt.AuthHeaderPrefix,

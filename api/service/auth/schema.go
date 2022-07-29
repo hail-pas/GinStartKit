@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/response"
-	"github.com/hail-pas/GinStartKit/global/common/utils"
 	"github.com/hail-pas/GinStartKit/global/constant"
 	"github.com/hail-pas/GinStartKit/storage/relational/model"
 )
@@ -27,17 +26,21 @@ func ValidateRegisterIn(c *gin.Context) (*UserRegisterIn, error) {
 		return nil, err
 	}
 
-	userRegisterIn.SystemIds = new(utils.Set[int64]).Set(userRegisterIn.SystemIds...).Array()
-
+	//userRegisterIn.SystemIds = new(utils.Set[int64]).Set(userRegisterIn.SystemIds...).Array()
 	existed := true
+	var setMap map[int64]bool
 	for _, systemId := range userRegisterIn.SystemIds {
+		if setMap[systemId] {
+			continue
+		}
+		setMap[systemId] = true
 		err = global.RelationalDatabase.Model(model.System{}).Select("count(*) > 0").Where(
 			"id = ?",
 			systemId,
 		).Find(&existed).Error
 
 		if err != nil || !existed {
-			response.WithoutPageInfo[any](
+			response.WithoutPageInfo(
 				c,
 				constant.CodeContentNotFound,
 				nil,

@@ -25,8 +25,70 @@ func init() {
 	}
 }
 
+func getQuery(c *gin.Context) []byte {
+	rawQuery := c.Request.URL.RawQuery
+	rawQuery, _ = url.QueryUnescape(rawQuery)
+	split := strings.Split(rawQuery, "&")
+	queryMap := make(map[string]string)
+	for _, v := range split {
+		kv := strings.Split(v, "=")
+		if len(kv) == 2 {
+			queryMap[kv[0]] = kv[1]
+		}
+	}
+	query, _ := json.Marshal(&queryMap)
+	return query
+}
+
+func getBody(c *gin.Context) []byte {
+	var body []byte = nil
+	if c.Request.Method != http.MethodGet {
+		var err error
+		body, err = ioutil.ReadAll(c.Request.Body)
+		if err == nil {
+			c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+		}
+	}
+	return body
+}
+
+func requestRecordPgTypePrepare(c *gin.Context) (pgtype.Inet, pgtype.JSON, pgtype.JSON, pgtype.JSON) {
+	query := getQuery(c)
+	var form map[string][]string
+	rawForm, _ := c.MultipartForm()
+	if rawForm != nil && rawForm.Value != nil {
+		form = rawForm.Value
+	}
+	//rawForm.File
+	body := getBody(c)
+
+	ip := net.ParseIP(c.ClientIP())
+
+	var iNet pgtype.Inet
+
+	_ = iNet.Set(ip)
+
+	var queryJson pgtype.JSON
+	var formJson pgtype.JSON
+	var bodyJson pgtype.JSON
+
+	_ = queryJson.Set(query)
+	_ = formJson.Set(form)
+	_ = bodyJson.Set(body)
+
+	if len(queryJson.Bytes) <= 2 {
+		queryJson.Bytes = nil
+	}
+
+	if len(formJson.Bytes) <= 4 {
+		formJson.Bytes = nil
+	}
+	return iNet, queryJson, formJson, bodyJson
+}
+
 func RequestRecorder() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		now := time.Now()
 		userTemp, ok := c.Get(IdentityKey)
 
 		if !ok {
@@ -35,99 +97,58 @@ func RequestRecorder() gin.HandlerFunc {
 
 		user := userTemp.(model.User)
 
-		var body []byte
-		if c.Request.Method != http.MethodGet {
-			var err error
-			body, err = ioutil.ReadAll(c.Request.Body)
-			if err != nil {
-				log.Error().Err(err)
-			} else {
-				c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
-			}
-		} else {
-			query := c.Request.URL.RawQuery
-			query, _ = url.QueryUnescape(query)
-			split := strings.Split(query, "&")
-			m := make(map[string]string)
-			for _, v := range split {
-				kv := strings.Split(v, "=")
-				if len(kv) == 2 {
-					m[kv[0]] = kv[1]
-				}
-			}
-			body, _ = json.Marshal(&m)
-		}
-
-		ip := net.ParseIP(c.ClientIP())
-
-		var iNet pgtype.Inet
-
-		_ = iNet.Set(ip)
+		iNet, queryJson, formJson, bodyJson := requestRecordPgTypePrepare(c)
 
 		record := model.RequestRecord{
-			Ip:     &iNet,
-			Method: c.Request.Method,
-			Path:   c.Request.URL.Path,
-			Agent:  c.Request.UserAgent(),
-			Body:   string(body),
-			UserID: user.ID,
+			ClientIp: &iNet,
+			Method:   c.Request.Method,
+			Path:     c.Request.URL.Path,
+			Agent:    c.Request.UserAgent(),
+			Query:    &queryJson,
+			FormData: &formJson,
+			Body:     &bodyJson,
+			UserID:   user.ID,
 		}
-
-		// 上传文件时候 中间件日志进行裁断操作
-		if strings.Index(c.GetHeader("Content-Type"), "multipart/form-data") > -1 {
-			if len(record.Body) > 1024 {
-				// 截断
-				newBody := respPool.Get().([]byte)
-				copy(newBody, record.Body)
-				record.Body = string(newBody)
-				defer respPool.Put(newBody[:0])
-			}
-		}
-
-		writer := responseBodyWriter{
-			ResponseWriter: c.Writer,
-			body:           &bytes.Buffer{},
-		}
-		c.Writer = writer
-		now := time.Now()
 
 		c.Next()
 
 		latency := time.Since(now)
-		record.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
-		record.Status = c.Writer.Status()
 		interval := &pgtype.Interval{}
 		_ = interval.Set(latency)
 		record.Latency = interval
-		record.Resp = writer.body.String()
+		record.StatusCode = c.Writer.Status()
 
-		if strings.Index(c.Writer.Header().Get("Pragma"), "public") > -1 ||
-			strings.Index(c.Writer.Header().Get("Expires"), "0") > -1 ||
-			strings.Index(c.Writer.Header().Get("Cache-Control"), "must-revalidate, post-check=0, pre-check=0") > -1 ||
-			strings.Index(c.Writer.Header().Get("Content-Type"), "application/force-download") > -1 ||
-			strings.Index(c.Writer.Header().Get("Content-Type"), "application/octet-stream") > -1 ||
-			strings.Index(c.Writer.Header().Get("Content-Type"), "application/vnd.ms-excel") > -1 ||
-			strings.Index(c.Writer.Header().Get("Content-Type"), "application/download") > -1 ||
-			strings.Index(c.Writer.Header().Get("Content-Disposition"), "attachment") > -1 ||
-			strings.Index(c.Writer.Header().Get("Content-Transfer-Encoding"), "binary") > -1 {
-			if len(record.Resp) > 1024 {
-				// 截断
-				newBody := respPool.Get().([]byte)
-				copy(newBody, record.Resp)
-				record.Body = string(newBody)
-				defer respPool.Put(newBody[:0])
-			}
-		}
+		var respJson pgtype.JSON
+
+		_ = respJson.Set(c.MustGet("simpleResp"))
+
+		record.Resp = &respJson
 		global.RelationalDatabase.Create(&record)
+		switch {
+		case record.StatusCode != 200:
+			{
+				log.Warn().
+					Str("time", time.Now().Format(time.RFC3339)).
+					Int("statusCode", record.StatusCode).
+					Str("method", record.Method).
+					Str("path", record.Path).
+					Dur("latency", latency).
+					Int64("userId", record.UserID).
+					Str("clientIp", c.ClientIP()).
+					Str("agent", record.Agent).
+					Msg("")
+			}
+		default:
+			log.Info().
+				Str("time", time.Now().Format(time.RFC3339)).
+				Int("statusCode", record.StatusCode).
+				Str("method", record.Method).
+				Str("path", record.Path).
+				Dur("latency", latency).
+				Int64("userId", record.UserID).
+				Str("clientIp", c.ClientIP()).
+				Str("agent", record.Agent).
+				Msg("")
+		}
 	}
-}
-
-type responseBodyWriter struct {
-	gin.ResponseWriter
-	body *bytes.Buffer
-}
-
-func (r responseBodyWriter) Write(b []byte) (int, error) {
-	r.body.Write(b)
-	return r.ResponseWriter.Write(b)
 }

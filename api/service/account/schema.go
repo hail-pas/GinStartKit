@@ -7,5 +7,5 @@ type UserResponseModel struct {
 	model.UsernameField
 	model.PhoneField
 	model.UserOtherInfo
-	Systems []model.System `json:"systems"`
+	Systems []model.SystemSimpleFields `json:"systems" gorm:"many2many:system_with_user;joinForeignKey:UserID;joinReferences:SystemID" label:"系统列表"`
 }
