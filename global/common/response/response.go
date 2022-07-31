@@ -21,7 +21,7 @@ type PageInfo struct {
 
 type Resp struct {
 	Code    int       `json:"code"`
-	Data    any       `json:"data"`
+	Data    any       `json:"data" swaggertype:"object"`
 	Message string    `json:"message"`
 	Time    time.Time `json:"time"`
 } //@name Response
