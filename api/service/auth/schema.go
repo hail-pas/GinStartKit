@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/response"
@@ -18,7 +19,7 @@ type UserRegisterIn struct {
 }
 
 func ValidateRegisterIn(c *gin.Context) (*UserRegisterIn, error) {
-	var userRegisterIn UserRegisterIn
+	var userRegisterIn UserRegisterIn = UserRegisterIn{}
 
 	err := c.ShouldBindJSON(&userRegisterIn)
 	if err != nil {
@@ -28,7 +29,7 @@ func ValidateRegisterIn(c *gin.Context) (*UserRegisterIn, error) {
 
 	//userRegisterIn.SystemIds = new(utils.Set[int64]).Set(userRegisterIn.SystemIds...).Array()
 	existed := true
-	var setMap map[int64]bool
+	var setMap map[int64]bool = make(map[int64]bool)
 	for _, systemId := range userRegisterIn.SystemIds {
 		if setMap[systemId] {
 			continue

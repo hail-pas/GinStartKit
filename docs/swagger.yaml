@@ -1,0 +1,440 @@
+basePath: /api/v1/
+definitions:
+  Response:
+    properties:
+      code:
+        type: integer
+      data:
+        additionalProperties:
+          items:
+            type: object
+          type: array
+        type: object
+      message:
+        type: string
+      time:
+        type: string
+    type: object
+  account.UserResponseModel:
+    properties:
+      avatar:
+        description: 用户头像
+        maxLength: 256
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        description: 用户邮箱
+        type: string
+      enabled:
+        description: 用户是否被禁用 1启用 0禁用
+        type: boolean
+      id:
+        type: integer
+      nickname:
+        description: 用户昵称
+        maxLength: 64
+        type: string
+      phone:
+        description: 用户手机号
+        type: string
+      systems:
+        items:
+          $ref: '#/definitions/model.SystemSimpleFields'
+        type: array
+      updatedAt:
+        type: string
+      username:
+        description: 用户登录名
+        maxLength: 32
+        minLength: 6
+        type: string
+    required:
+    - nickname
+    - phone
+    - username
+    type: object
+  auth.UserRegisterIn:
+    properties:
+      avatar:
+        description: 用户头像
+        maxLength: 256
+        type: string
+      email:
+        description: 用户邮箱
+        type: string
+      enabled:
+        description: 用户是否被禁用 1启用 0禁用
+        type: boolean
+      nickname:
+        description: 用户昵称
+        maxLength: 64
+        type: string
+      password:
+        description: 用户登录密码
+        maxLength: 20
+        minLength: 10
+        type: string
+      phone:
+        description: 用户手机号
+        type: string
+      systemIds:
+        items:
+          type: integer
+        type: array
+      username:
+        description: 用户登录名
+        maxLength: 32
+        minLength: 6
+        type: string
+    required:
+    - nickname
+    - phone
+    - systemIds
+    - username
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  model.Permission:
+    properties:
+      code:
+        maxLength: 32
+        minLength: 1
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        maxLength: 255
+        type: string
+      id:
+        type: integer
+      label:
+        maxLength: 64
+        minLength: 1
+        type: string
+      systemResources:
+        items:
+          $ref: '#/definitions/model.SystemResource'
+        type: array
+      updatedAt:
+        type: string
+    required:
+    - code
+    - label
+    type: object
+  model.Role:
+    properties:
+      code:
+        maxLength: 32
+        minLength: 1
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        maxLength: 255
+        type: string
+      id:
+        type: integer
+      label:
+        maxLength: 64
+        minLength: 1
+        type: string
+      system:
+        $ref: '#/definitions/model.System'
+      systemId:
+        minimum: 1
+        type: integer
+      systemResources:
+        items:
+          $ref: '#/definitions/model.SystemResource'
+        type: array
+      updatedAt:
+        type: string
+    required:
+    - code
+    - label
+    - systemId
+    type: object
+  model.System:
+    properties:
+      code:
+        maxLength: 32
+        minLength: 1
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        maxLength: 255
+        type: string
+      id:
+        type: integer
+      label:
+        maxLength: 64
+        minLength: 1
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/model.Role'
+        type: array
+      systemResources:
+        items:
+          $ref: '#/definitions/model.SystemResource'
+        type: array
+      updatedAt:
+        type: string
+      users:
+        items:
+          $ref: '#/definitions/model.User'
+        type: array
+    required:
+    - code
+    - label
+    type: object
+  model.SystemResource:
+    properties:
+      code:
+        maxLength: 32
+        minLength: 1
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        maxLength: 255
+        type: string
+      enabled:
+        type: boolean
+      frontRoutePath:
+        type: string
+      iconPath:
+        type: string
+      id:
+        type: integer
+      label:
+        maxLength: 64
+        minLength: 1
+        type: string
+      orderNum:
+        type: integer
+      parent:
+        $ref: '#/definitions/model.SystemResource'
+      parentId:
+        type: integer
+      referenceTo:
+        $ref: '#/definitions/model.SystemResource'
+      referenceToId:
+        type: integer
+      roles:
+        items:
+          $ref: '#/definitions/model.Role'
+        type: array
+      systemResources:
+        items:
+          $ref: '#/definitions/model.Permission'
+        type: array
+      type:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - code
+    - label
+    type: object
+  model.SystemSimpleFields:
+    properties:
+      code:
+        maxLength: 32
+        minLength: 1
+        type: string
+      description:
+        maxLength: 255
+        type: string
+      id:
+        type: integer
+      label:
+        maxLength: 64
+        minLength: 1
+        type: string
+    required:
+    - code
+    - label
+    type: object
+  model.User:
+    properties:
+      avatar:
+        description: 用户头像
+        maxLength: 256
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        description: 用户邮箱
+        type: string
+      enabled:
+        description: 用户是否被禁用 1启用 0禁用
+        type: boolean
+      id:
+        type: integer
+      nickname:
+        description: 用户昵称
+        maxLength: 64
+        type: string
+      password:
+        description: 用户登录密码
+        maxLength: 20
+        minLength: 10
+        type: string
+      phone:
+        description: 用户手机号
+        type: string
+      systems:
+        items:
+          $ref: '#/definitions/model.System'
+        type: array
+      updatedAt:
+        type: string
+      username:
+        description: 用户登录名
+        maxLength: 32
+        minLength: 6
+        type: string
+      uuid:
+        description: 用户UUID
+        type: string
+    required:
+    - nickname
+    - phone
+    - username
+    type: object
+  model.UserLoginWithPhone:
+    properties:
+      password:
+        description: 用户登录密码
+        maxLength: 20
+        minLength: 10
+        type: string
+      phone:
+        description: 用户手机号
+        type: string
+    required:
+    - phone
+    type: object
+host: 127.0.0.1:8000
+info:
+  contact:
+    email: hypofiasco@gmail.com
+    name: hypo-fiasco
+    url: https://github.com/hail-pas/GinStartKit
+  description: Start Kit of Gin
+  license:
+    url: https://github.com/hail-pas/GinStartKit
+  title: GInStartKit
+  version: "1.0"
+paths:
+  /account:
+    get:
+      consumes:
+      - application/x-www-form-urlencoded
+      operationId: get-account-list
+      parameters:
+      - description: 页码
+        in: query
+        name: pageNum
+        required: true
+        type: integer
+      - description: 页长
+        in: query
+        name: pageSize
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/account.UserResponseModel'
+                  type: array
+              type: object
+      security:
+      - Jwt: []
+      summary: 用户列表
+      tags:
+      - Account
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 登录body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginWithPhone'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.User'
+              type: object
+      summary: 登录接口
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 注册body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserRegisterIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Response'
+      summary: 注册接口
+      tags:
+      - Auth
+schemes:
+- http
+securityDefinitions:
+  Jwt:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

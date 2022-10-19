@@ -16,6 +16,8 @@
 *.imi
 *.xml
 *.idea
+go.sum
+.vscode
 
 config/content/*
 !config/content/default.yaml

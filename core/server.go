@@ -3,12 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/fvbock/endless"
 	"github.com/hail-pas/GinStartKit/api"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/initialize"
 	"github.com/rs/zerolog/log"
-	"time"
 )
 
 func initializeGlobal(configPath string) {
@@ -39,8 +41,21 @@ func initializeGlobal(configPath string) {
 // @in                          header
 // @name                        Authorization
 func main() {
-	configFile := flag.String("conf", "./config/content/default.yaml", "Path to the configuration file")
+	configFile := flag.String("conf", "", "Path to the configuration file")
 	flag.Parse()
+
+	dir, _ := os.Getwd()
+
+	fmt.Print(dir)
+
+	if *configFile == "" {
+		environment := os.Getenv("environment")
+		if environment != "" {
+			*configFile = fmt.Sprintf("config/content/%s.yaml", environment)
+		} else {
+			*configFile = "config/content/default.yaml"
+		}
+	}
 
 	initializeGlobal(*configFile)
 
