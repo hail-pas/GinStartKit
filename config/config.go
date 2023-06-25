@@ -57,7 +57,7 @@ func SetConfig(configPath string) *Config {
 	return &config
 }
 
-//validate := validator.New()
+// validate := validator.New()
 func setRelationalDatabase(c *Config) {
 	relationalDatabaseConfig := RelationalDatabaseConfig{}
 	relationalDatabaseConfig.TcpAddr = RetrieveTcpAddr(viper.GetString("RelationalDatabase.Addr"))
@@ -89,7 +89,7 @@ func setSystem(c *Config) {
 	if systemConfig.Debug && systemConfig.Environment == Production {
 		panic("Cannot set debug mode when environment is Production")
 	}
-	if systemConfig.Debug == false {
+	if !systemConfig.Debug {
 		gin.SetMode(gin.ReleaseMode)
 	} else {
 		gin.SetMode(gin.DebugMode)

@@ -2,10 +2,11 @@ package config
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
 	"net"
 	"net/url"
 	"strings"
+
+	"github.com/rs/zerolog"
 )
 
 const (
@@ -120,19 +121,18 @@ type RelationalDatabaseConfig struct {
 }
 
 func (r RelationalDatabaseConfig) Dsn() string {
-	var pathValues url.Values
-	pathValues = r.PathParam
+	pathValues := url.Values(r.PathParam)
 	dsn := ""
 	switch r.Type {
 	case "mysql":
-		dsn = (&url.URL{
-			User:     url.UserPassword(r.Username, r.Password),
-			Scheme:   r.Type,
-			Host:     r.TcpAddr.String(),
-			Path:     r.DatabaseName,
-			RawQuery: (&pathValues).Encode(),
-		}).String()
-		//dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", r.Username, r.Password, r.TcpAddr.String(), r.DatabaseName, r.PathParam)
+		// dsn = (&url.URL{
+		// 	User:     url.UserPassword(r.Username, r.Password),
+		// 	Scheme:   r.Type,
+		// 	Host:     fmt.Sprintf("tcp(%s)", r.TcpAddr.String()),
+		// 	Path:     r.DatabaseName,
+		// 	RawQuery: (&pathValues).Encode(),
+		// }).String()
+		dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s?%s", r.Username, r.Password, r.TcpAddr.String(), r.DatabaseName, r.PathParam)
 	case "postgres":
 		dsn = (&url.URL{
 			User:     url.UserPassword(r.Username, r.Password),
@@ -142,6 +142,8 @@ func (r RelationalDatabaseConfig) Dsn() string {
 			RawQuery: (&pathValues).Encode(),
 		}).String()
 		//dsn = fmt.Sprintf("postgresql://%s:%s@%s/%s?%s", r.Username, r.Password, r.TcpAddr.String(), r.DatabaseName, r.PathParam)
+	default:
+		panic(fmt.Sprintf("Unsupported database type: %s", r.Type))
 	}
 	return dsn
 }

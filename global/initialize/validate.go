@@ -1,6 +1,9 @@
 package initialize
 
 import (
+	"reflect"
+	"strings"
+
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
@@ -9,8 +12,6 @@ import (
 	zhTranslations "github.com/go-playground/validator/v10/translations/zh"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/constant"
-	"reflect"
-	"strings"
 )
 
 var (
