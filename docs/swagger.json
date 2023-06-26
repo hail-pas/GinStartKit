@@ -6,12 +6,14 @@
     "info": {
         "description": "Start Kit of Gin",
         "title": "GInStartKit",
+        "termsOfService": "https://github.com/hail-pas/GinStartKit",
         "contact": {
             "name": "hypo-fiasco",
             "url": "https://github.com/hail-pas/GinStartKit",
             "email": "hypofiasco@gmail.com"
         },
         "license": {
+            "name": "MIT",
             "url": "https://github.com/hail-pas/GinStartKit"
         },
         "version": "1.0"
@@ -41,7 +43,7 @@
                     {
                         "type": "integer",
                         "description": "页码",
-                        "name": "pageNum",
+                        "name": "PageNum",
                         "in": "query",
                         "required": true
                     },
@@ -57,22 +59,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/account.UserResponseModel"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/ResponseWithPageInfo-array_account_UserResponseModel"
                         }
                     }
                 }
@@ -105,19 +92,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.User"
-                                        }
-                                    }
-                                }
-                            ]
+                            "$ref": "#/definitions/Response-model_UserLoginWithPhone"
                         }
                     }
                 }
@@ -150,7 +125,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/Response"
+                            "$ref": "#/definitions/Response-model_UserLoginWithUsername"
                         }
                     }
                 }
@@ -158,23 +133,57 @@
         }
     },
     "definitions": {
-        "Response": {
+        "Response-model_UserLoginWithPhone": {
             "type": "object",
             "properties": {
                 "code": {
                     "type": "integer"
                 },
                 "data": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "array",
-                        "items": {
-                            "type": "object"
-                        }
+                    "$ref": "#/definitions/model.UserLoginWithPhone"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "Response-model_UserLoginWithUsername": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/model.UserLoginWithUsername"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "ResponseWithPageInfo-array_account_UserResponseModel": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/account.UserResponseModel"
                     }
                 },
                 "message": {
                     "type": "string"
+                },
+                "pageInfo": {
+                    "$ref": "#/definitions/response.PageInfo"
                 },
                 "time": {
                     "type": "string"
@@ -193,12 +202,6 @@
                     "description": "用户头像",
                     "type": "string",
                     "maxLength": 256
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "email": {
                     "description": "用户邮箱",
@@ -225,9 +228,6 @@
                     "items": {
                         "$ref": "#/definitions/model.SystemSimpleFields"
                     }
-                },
-                "updatedAt": {
-                    "type": "string"
                 },
                 "username": {
                     "description": "用户登录名",
@@ -288,235 +288,6 @@
                 }
             }
         },
-        "gorm.DeletedAt": {
-            "type": "object",
-            "properties": {
-                "time": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
-        "model.Permission": {
-            "type": "object",
-            "required": [
-                "code",
-                "label"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 1
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "label": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 1
-                },
-                "systemResources": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.SystemResource"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Role": {
-            "type": "object",
-            "required": [
-                "code",
-                "label",
-                "systemId"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 1
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "label": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 1
-                },
-                "system": {
-                    "$ref": "#/definitions/model.System"
-                },
-                "systemId": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "systemResources": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.SystemResource"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.System": {
-            "type": "object",
-            "required": [
-                "code",
-                "label"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 1
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "label": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 1
-                },
-                "roles": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Role"
-                    }
-                },
-                "systemResources": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.SystemResource"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "users": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.User"
-                    }
-                }
-            }
-        },
-        "model.SystemResource": {
-            "type": "object",
-            "required": [
-                "code",
-                "label"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 1
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "description": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "frontRoutePath": {
-                    "type": "string"
-                },
-                "iconPath": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "label": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 1
-                },
-                "orderNum": {
-                    "type": "integer"
-                },
-                "parent": {
-                    "$ref": "#/definitions/model.SystemResource"
-                },
-                "parentId": {
-                    "type": "integer"
-                },
-                "referenceTo": {
-                    "$ref": "#/definitions/model.SystemResource"
-                },
-                "referenceToId": {
-                    "type": "integer"
-                },
-                "roles": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Role"
-                    }
-                },
-                "systemResources": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Permission"
-                    }
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                }
-            }
-        },
         "model.SystemSimpleFields": {
             "type": "object",
             "required": [
@@ -543,72 +314,6 @@
                 }
             }
         },
-        "model.User": {
-            "type": "object",
-            "required": [
-                "nickname",
-                "phone",
-                "username"
-            ],
-            "properties": {
-                "avatar": {
-                    "description": "用户头像",
-                    "type": "string",
-                    "maxLength": 256
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "email": {
-                    "description": "用户邮箱",
-                    "type": "string"
-                },
-                "enabled": {
-                    "description": "用户是否被禁用 1启用 0禁用",
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nickname": {
-                    "description": "用户昵称",
-                    "type": "string",
-                    "maxLength": 64
-                },
-                "password": {
-                    "description": "用户登录密码",
-                    "type": "string",
-                    "maxLength": 20,
-                    "minLength": 10
-                },
-                "phone": {
-                    "description": "用户手机号",
-                    "type": "string"
-                },
-                "systems": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.System"
-                    }
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "username": {
-                    "description": "用户登录名",
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 6
-                },
-                "uuid": {
-                    "description": "用户UUID",
-                    "type": "string"
-                }
-            }
-        },
         "model.UserLoginWithPhone": {
             "type": "object",
             "required": [
@@ -624,6 +329,43 @@
                 "phone": {
                     "description": "用户手机号",
                     "type": "string"
+                }
+            }
+        },
+        "model.UserLoginWithUsername": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "description": "用户登录密码",
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 10
+                },
+                "username": {
+                    "description": "用户登录名",
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 6
+                }
+            }
+        },
+        "response.PageInfo": {
+            "type": "object",
+            "properties": {
+                "pageNum": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "totalCount": {
+                    "type": "integer"
+                },
+                "totalPage": {
+                    "type": "integer"
                 }
             }
         }

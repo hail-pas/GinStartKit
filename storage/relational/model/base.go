@@ -1,15 +1,16 @@
 package model
 
-import (
-	"gorm.io/gorm"
-	"time"
-)
+// import (
+// 	"time"
+
+// 	"gorm.io/gorm"
+// )
 
 type BaseModel struct {
 	ID        int64          `json:"id"`
-	CreatedAt time.Time      `json:"createdAt"`
-	UpdatedAt time.Time      `json:"updatedAt"`
-	DeletedAt gorm.DeletedAt `json:"deletedAt"`
+	// CreatedAt time.Time      `json:"createdAt" swaggertype:"string"`
+	// UpdatedAt time.Time      `json:"updatedAt" swaggertype:"string"`
+	// DeletedAt gorm.DeletedAt `json:"deletedAt" swaggertype:"string"`
 }
 
 type UniqueCodeBase struct {

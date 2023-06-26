@@ -1,17 +1,39 @@
 basePath: /api/v1/
 definitions:
-  Response:
+  Response-model_UserLoginWithPhone:
     properties:
       code:
         type: integer
       data:
-        additionalProperties:
-          items:
-            type: object
-          type: array
-        type: object
+        $ref: '#/definitions/model.UserLoginWithPhone'
       message:
         type: string
+      time:
+        type: string
+    type: object
+  Response-model_UserLoginWithUsername:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/model.UserLoginWithUsername'
+      message:
+        type: string
+      time:
+        type: string
+    type: object
+  ResponseWithPageInfo-array_account_UserResponseModel:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/account.UserResponseModel'
+        type: array
+      message:
+        type: string
+      pageInfo:
+        $ref: '#/definitions/response.PageInfo'
       time:
         type: string
     type: object
@@ -21,10 +43,6 @@ definitions:
         description: 用户头像
         maxLength: 256
         type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
       email:
         description: 用户邮箱
         type: string
@@ -44,8 +62,6 @@ definitions:
         items:
           $ref: '#/definitions/model.SystemSimpleFields'
         type: array
-      updatedAt:
-        type: string
       username:
         description: 用户登录名
         maxLength: 32
@@ -95,166 +111,6 @@ definitions:
     - systemIds
     - username
     type: object
-  gorm.DeletedAt:
-    properties:
-      time:
-        type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
-    type: object
-  model.Permission:
-    properties:
-      code:
-        maxLength: 32
-        minLength: 1
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      description:
-        maxLength: 255
-        type: string
-      id:
-        type: integer
-      label:
-        maxLength: 64
-        minLength: 1
-        type: string
-      systemResources:
-        items:
-          $ref: '#/definitions/model.SystemResource'
-        type: array
-      updatedAt:
-        type: string
-    required:
-    - code
-    - label
-    type: object
-  model.Role:
-    properties:
-      code:
-        maxLength: 32
-        minLength: 1
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      description:
-        maxLength: 255
-        type: string
-      id:
-        type: integer
-      label:
-        maxLength: 64
-        minLength: 1
-        type: string
-      system:
-        $ref: '#/definitions/model.System'
-      systemId:
-        minimum: 1
-        type: integer
-      systemResources:
-        items:
-          $ref: '#/definitions/model.SystemResource'
-        type: array
-      updatedAt:
-        type: string
-    required:
-    - code
-    - label
-    - systemId
-    type: object
-  model.System:
-    properties:
-      code:
-        maxLength: 32
-        minLength: 1
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      description:
-        maxLength: 255
-        type: string
-      id:
-        type: integer
-      label:
-        maxLength: 64
-        minLength: 1
-        type: string
-      roles:
-        items:
-          $ref: '#/definitions/model.Role'
-        type: array
-      systemResources:
-        items:
-          $ref: '#/definitions/model.SystemResource'
-        type: array
-      updatedAt:
-        type: string
-      users:
-        items:
-          $ref: '#/definitions/model.User'
-        type: array
-    required:
-    - code
-    - label
-    type: object
-  model.SystemResource:
-    properties:
-      code:
-        maxLength: 32
-        minLength: 1
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      description:
-        maxLength: 255
-        type: string
-      enabled:
-        type: boolean
-      frontRoutePath:
-        type: string
-      iconPath:
-        type: string
-      id:
-        type: integer
-      label:
-        maxLength: 64
-        minLength: 1
-        type: string
-      orderNum:
-        type: integer
-      parent:
-        $ref: '#/definitions/model.SystemResource'
-      parentId:
-        type: integer
-      referenceTo:
-        $ref: '#/definitions/model.SystemResource'
-      referenceToId:
-        type: integer
-      roles:
-        items:
-          $ref: '#/definitions/model.Role'
-        type: array
-      systemResources:
-        items:
-          $ref: '#/definitions/model.Permission'
-        type: array
-      type:
-        type: string
-      updatedAt:
-        type: string
-    required:
-    - code
-    - label
-    type: object
   model.SystemSimpleFields:
     properties:
       code:
@@ -274,55 +130,6 @@ definitions:
     - code
     - label
     type: object
-  model.User:
-    properties:
-      avatar:
-        description: 用户头像
-        maxLength: 256
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      email:
-        description: 用户邮箱
-        type: string
-      enabled:
-        description: 用户是否被禁用 1启用 0禁用
-        type: boolean
-      id:
-        type: integer
-      nickname:
-        description: 用户昵称
-        maxLength: 64
-        type: string
-      password:
-        description: 用户登录密码
-        maxLength: 20
-        minLength: 10
-        type: string
-      phone:
-        description: 用户手机号
-        type: string
-      systems:
-        items:
-          $ref: '#/definitions/model.System'
-        type: array
-      updatedAt:
-        type: string
-      username:
-        description: 用户登录名
-        maxLength: 32
-        minLength: 6
-        type: string
-      uuid:
-        description: 用户UUID
-        type: string
-    required:
-    - nickname
-    - phone
-    - username
-    type: object
   model.UserLoginWithPhone:
     properties:
       password:
@@ -336,6 +143,32 @@ definitions:
     required:
     - phone
     type: object
+  model.UserLoginWithUsername:
+    properties:
+      password:
+        description: 用户登录密码
+        maxLength: 20
+        minLength: 10
+        type: string
+      username:
+        description: 用户登录名
+        maxLength: 32
+        minLength: 6
+        type: string
+    required:
+    - username
+    type: object
+  response.PageInfo:
+    properties:
+      pageNum:
+        type: integer
+      pageSize:
+        type: integer
+      totalCount:
+        type: integer
+      totalPage:
+        type: integer
+    type: object
 host: 127.0.0.1:8000
 info:
   contact:
@@ -344,7 +177,9 @@ info:
     url: https://github.com/hail-pas/GinStartKit
   description: Start Kit of Gin
   license:
+    name: MIT
     url: https://github.com/hail-pas/GinStartKit
+  termsOfService: https://github.com/hail-pas/GinStartKit
   title: GInStartKit
   version: "1.0"
 paths:
@@ -356,7 +191,7 @@ paths:
       parameters:
       - description: 页码
         in: query
-        name: pageNum
+        name: PageNum
         required: true
         type: integer
       - description: 页长
@@ -370,14 +205,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/account.UserResponseModel'
-                  type: array
-              type: object
+            $ref: '#/definitions/ResponseWithPageInfo-array_account_UserResponseModel'
       security:
       - Jwt: []
       summary: 用户列表
@@ -400,12 +228,7 @@ paths:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.User'
-              type: object
+            $ref: '#/definitions/Response-model_UserLoginWithPhone'
       summary: 登录接口
       tags:
       - Auth
@@ -426,7 +249,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Response-model_UserLoginWithUsername'
       summary: 注册接口
       tags:
       - Auth

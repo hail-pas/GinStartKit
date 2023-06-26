@@ -14,7 +14,7 @@ import (
 // @accept json
 // @Produce json
 // @Param data body auth.UserRegisterIn true "注册body"
-// @Success 200 {object} response.Resp 成功
+// @Success 200 {object} response.Resp[model.UserLoginWithUsername] 成功
 // @Router /auth/register [post]
 func Register(c *gin.Context) {
 	userRegisterIn, err := auth.ValidateRegisterIn(c)
@@ -30,7 +30,7 @@ func Register(c *gin.Context) {
 // @accept json
 // @Produce json
 // @Param data body model.UserLoginWithPhone true "登录body"
-// @Success 200 {object} response.Resp{data=model.User} 成功
+// @Success 200 {object} response.Resp[model.UserLoginWithPhone] 成功
 // @Router /auth/login [post]
 func Login(c *gin.Context) {
 	middleware.GetAuthJwtMiddleware().LoginHandler(c)

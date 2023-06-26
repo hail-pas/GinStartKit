@@ -2,14 +2,15 @@ package response
 
 import (
 	"encoding/json"
+	"math"
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"github.com/hail-pas/GinStartKit/global"
 	"github.com/hail-pas/GinStartKit/global/common/utils"
 	"github.com/hail-pas/GinStartKit/global/constant"
-	"math"
-	"net/http"
-	"time"
 )
 
 type PageInfo struct {
@@ -19,20 +20,23 @@ type PageInfo struct {
 	PageSize   int64 `json:"pageSize"`
 }
 
-type Resp struct {
+type Resp[T any] struct {
 	Code    int       `json:"code"`
-	Data    any       `json:"data" swaggertype:"object"`
+	Data    T         `json:"data"`
 	Message string    `json:"message"`
 	Time    time.Time `json:"time"`
 } //@name Response
 
-type WithPageInfo struct {
-	Resp
-	PageInfo PageInfo `json:"pageInfo"`
+type WithPageInfo[T any] struct {
+	Code     int       `json:"code"`
+	Data     T         `json:"data"`
+	Message  string    `json:"message"`
+	Time     time.Time `json:"time"`
+	PageInfo PageInfo  `json:"pageInfo"`
 } //@name ResponseWithPageInfo
 
 func Response(c *gin.Context, code int, data any, message string, pageSize, pageNum, totalCount int64) {
-	resp := Resp{
+	resp := Resp[any]{
 		Code:    code,
 		Message: message,
 		Time:    time.Now(),
@@ -44,8 +48,11 @@ func Response(c *gin.Context, code int, data any, message string, pageSize, page
 	if pageSize == -1 && pageNum == -1 && totalCount == -1 {
 		c.JSON(http.StatusOK, resp)
 	} else {
-		c.JSON(http.StatusOK, WithPageInfo{
-			Resp: resp,
+		c.JSON(http.StatusOK, WithPageInfo[any]{
+			Code:    resp.Code,
+			Message: resp.Message,
+			Time:    resp.Time,
+			Data:    resp.Data,
 			PageInfo: PageInfo{
 				TotalPage:  int64(math.Ceil(float64(totalCount) / float64(pageSize))),
 				TotalCount: totalCount,
